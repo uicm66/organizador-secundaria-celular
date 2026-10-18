@@ -119,6 +119,14 @@ export async function restaurarTodosLosDocumentos(filas) {
   for (var i = 0; i < filas.length; i++) {
     await _guardarFila(filas[i].key, filas[i].data);
   }
+  // Las pantallas guardan copias temporales de listas (Personal, etc.) en localStorage con prefijo "fcp_" (formato {d, t}, 10 min):
+  // tras restaurar hay que borrarlas, si no se siguen viendo los datos de ANTES. (No se tocan otras claves "fcp_…" como la licencia/token.)
+  try {
+    Object.keys(localStorage).forEach(function (k) {
+      if (k.indexOf("fcp_") !== 0) return;
+      try { var v = JSON.parse(localStorage.getItem(k)); if (v && typeof v === "object" && "d" in v && "t" in v) localStorage.removeItem(k); } catch (e) {}
+    });
+  } catch (e) {}
   // Cierra la sesión activa -- quien restaure debe volver a iniciar
   // sesión con una de las cuentas que acaban de restaurarse, en vez de
   // quedar "logueado" con un uid que puede ya no aplicar.
