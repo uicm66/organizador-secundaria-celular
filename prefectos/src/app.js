@@ -83,14 +83,36 @@ function _pfCodigo(registros, prefecto, fecha) {
   return "PF-" + b64;
 }
 
-function _pfBotonWhatsapp(url) {
+// Panel de envío: SIEMPRE se muestra al terminar el registro, con las dos salidas (WhatsApp o copiar el reporte).
+function _pfCopiarTexto(texto) {
+  return new Promise(function (ok) {
+    function viejo() {
+      var t = document.createElement("textarea"); t.value = texto; t.style.cssText = "position:fixed;left:-9999px;top:0"; document.body.appendChild(t);
+      t.focus(); t.select(); var r = false; try { r = document.execCommand("copy"); } catch (e) {} t.remove(); ok(r);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(texto).then(function () { ok(true); }, viejo); else viejo();
+  });
+}
+function _pfBotonWhatsapp(url, texto) {
   var prev = document.getElementById("pf-wa-boton"); if (prev) prev.remove();
+  var d = document.createElement("div");
+  d.id = "pf-wa-boton";
+  d.style.cssText = "position:fixed;left:10px;right:10px;bottom:12px;z-index:9999;background:#fff;border-radius:14px;padding:14px;box-shadow:0 6px 24px rgba(0,0,0,.35);font-family:system-ui,sans-serif";
+  d.innerHTML = "<div style='font-weight:700;font-size:15px;color:#1a237e;margin-bottom:4px'>✅ Reporte guardado en este celular</div>" +
+    "<div style='font-size:12.5px;color:#57534e;margin-bottom:10px'>Mándalo a la dirección. Si WhatsApp no abre, copia el reporte y pégalo donde quieras.</div>";
   var a = document.createElement("a");
-  a.id = "pf-wa-boton"; a.href = url; a.target = "_blank"; a.rel = "noopener";
-  a.textContent = "📲 Enviar el reporte por WhatsApp";
-  a.style.cssText = "position:fixed;left:12px;right:12px;bottom:14px;z-index:9999;background:#16a34a;color:#fff;text-align:center;padding:16px;border-radius:12px;font-size:16px;font-weight:700;text-decoration:none;box-shadow:0 6px 24px rgba(0,0,0,.3)";
-  a.onclick = function () { setTimeout(function () { a.remove(); }, 800); };
-  document.body.appendChild(a);
+  a.href = url; a.target = "_blank"; a.rel = "noopener"; a.textContent = "📲 Enviar por WhatsApp";
+  a.style.cssText = "display:block;background:#16a34a;color:#fff;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:8px";
+  var b = document.createElement("button");
+  b.textContent = "📋 Copiar reporte"; b.type = "button";
+  b.style.cssText = "display:block;width:100%;background:#1a237e;color:#fff;text-align:center;padding:14px;border:0;border-radius:10px;font-size:15px;font-weight:700;margin-bottom:8px";
+  b.onclick = function () { _pfCopiarTexto(texto).then(function (ok) { b.textContent = ok ? "✅ Copiado: pégalo en WhatsApp, Mensajes o correo" : "No se pudo copiar: mantén presionado el texto de abajo"; if (!ok) { var t = document.createElement("textarea"); t.readOnly = true; t.value = texto; t.rows = 4; t.style.cssText = "width:100%;font-size:11px;box-sizing:border-box"; d.appendChild(t); t.select(); } }); };
+  var x = document.createElement("button");
+  x.textContent = "Cerrar"; x.type = "button";
+  x.style.cssText = "display:block;width:100%;background:none;color:#57534e;border:0;padding:8px;font-size:13px";
+  x.onclick = function () { d.remove(); };
+  d.appendChild(a); d.appendChild(b); d.appendChild(x);
+  document.body.appendChild(d);
 }
 
 function _pfMandar() {
@@ -112,7 +134,7 @@ function _pfMandar() {
   var url = "https://wa.me/" + numero + "?text=" + encodeURIComponent(texto);
   var w = null;
   try { w = window.open(url, "_blank"); } catch (e) {}
-  if (!w) _pfBotonWhatsapp(url);   // el navegador bloqueó la ventana: se ofrece un botón para tocar
+  _pfBotonWhatsapp(url, texto);   // siempre: botón de WhatsApp y opción de copiar el reporte
 }
 
 // addDoc: guarda en este equipo (con los MISMOS campos de siempre) y junta el
