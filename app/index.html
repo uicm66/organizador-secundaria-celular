@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Organizador Secundaria">
+<meta name="theme-color" content="#0d4f4a">
+<link href="assets/fonts/plus-jakarta-sans/plus-jakarta-sans.css" rel="stylesheet"><title>Organizador Secundaria</title>
+<link rel="stylesheet" href="assets/icons/tabler-icons/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#faf8f4;font-family:sans-serif}
+#layout{display:grid;grid-template-columns:200px 1fr;grid-template-rows:60px 1fr;min-height:100vh;grid-template-areas:"sidebar header" "sidebar main"}
+#sidebar{grid-area:sidebar;background:white;border-right:1px solid #e7e1d4;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:30;transition:transform .25s ease}
+#app-header{grid-area:header;background:white;border-bottom:1px solid #e7e1d4;display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:20}
+#main-content{grid-area:main;padding:28px 32px 60px;overflow-x:hidden}
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:25}
+#sidebar-overlay.open{display:block}
+#hamburger{display:none;background:none;border:none;cursor:pointer;padding:6px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.panel-bottom{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.accesos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 18px}
+.user-email{display:flex;align-items:center;gap:10px;padding:4px 10px 4px 4px;border-radius:20px;border:1px solid #e7e1d4;max-width:220px;overflow:hidden}
+.user-email span{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:900px){
+#layout{grid-template-columns:1fr;grid-template-areas:"header" "main"}
+#sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;transform:translateX(-100%)}
+#sidebar.open{transform:translateX(0)}
+#hamburger{display:flex;align-items:center;justify-content:center}
+#main-content{padding:20px 16px 60px}
+.kpi-grid{grid-template-columns:repeat(2,1fr)}
+.panel-bottom{grid-template-columns:1fr}
+.accesos-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px){
+#app-header{padding:0 10px;gap:6px}
+#main-content{padding:12px 10px 80px}
+.kpi-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+.accesos-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+.user-email{max-width:36px;padding:4px;border:none}
+.user-email span{display:none}
+#breadcrumb{font-size:12px;font-weight:500;color:#44403c}
+}
+.agenda-row{display:flex;gap:8px;padding:10px 0;border-bottom:1px solid #f0ece4;align-items:flex-start;flex-wrap:wrap}.agenda-row-hora{font-size:13px;font-weight:600;min-width:70px;padding-top:1px;flex-shrink:0}.agenda-row-texto{flex:1;min-width:0}.agenda-row-btns{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0}@media(max-width:480px){.agenda-row{gap:6px}.agenda-row-hora{min-width:60px;font-size:12px}.agenda-row-btns{flex-direction:row;width:100%;justify-content:flex-end;margin-top:4px}}</style>
+</head>
+<body>
+<div id="app">Cargando...</div>
+<script type="module" src="src/arranque-celular.js"></script>
+
+</body>
+</html>
