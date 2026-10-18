@@ -22,7 +22,8 @@
     var maestros = ((d && d.m) || []).map(function (x, i) { return { id: "m" + i, nombre: x[0] || "", academia: x[1] || "" }; });
     // wa.me necesita código de país: un número de 10 dígitos (México) recibe el 52, también si el enlace es viejo.
     var w = String((d && d.w) || "").replace(/\D/g, ""); if (w.length === 10) w = "52" + w;
-    var esc = { nombre: (d && d.n) || "", siglas: (d && d.s) || "", whatsapp: w };
+    var gr = (d && Array.isArray(d.g) && d.g.length === 3) ? d.g.map(function (n) { n = parseInt(n, 10); return isNaN(n) ? 6 : Math.max(0, Math.min(12, n)); }) : [6, 6, 6];
+    var esc = { nombre: (d && d.n) || "", siglas: (d && d.s) || "", whatsapp: w, grupos: gr };
     return { maestros: maestros, escuela: esc };
   }
   var lista = null;

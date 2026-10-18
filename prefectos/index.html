@@ -175,6 +175,7 @@
   fetch('/api/prefectos/maestros', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
     var e = (j && j.escuela) || {}, n = e.nombre || '';
     window.__pfWa = e.whatsapp || '';
+    window.__pfGrupos = (e.grupos && e.grupos.length === 3) ? e.grupos : [6, 6, 6];   // cuántos grupos tiene cada grado en esta escuela
     if (!n) return;
     document.title = 'Prefectos · ' + (e.siglas || n);
     var t = document.getElementById('pf-titulo'); if (t) t.textContent = 'Prefectos';

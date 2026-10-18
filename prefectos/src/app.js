@@ -128,7 +128,7 @@ function _pfMandar() {
     return { t: d.tipo || "inasistencia", m: d.maestroNombre, h: d.horasNoTrabajadas, g: d.grupos };
   });
   var codigo = _pfCodigo(r, prefecto, fecha);
-  var texto = "Reporte de prefectos " + fecha + " · " + prefecto + "\n" + codigo;
+  var texto = codigo;   // el mensaje lleva SOLO el código (así se copia y se pega en la app sin quitar nada)
   // Si la dirección capturó su WhatsApp en Configuración, el mensaje sale directo a ese número.
   var numero = String(window.__pfWa || "").replace(/\D/g, "");
   var url = "https://wa.me/" + numero + "?text=" + encodeURIComponent(texto);
@@ -223,15 +223,23 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
   prefectoActual = null;
 });
 
+// Grupos de la escuela (vienen en el enlace / el servidor): [n1, n2, n3] = cuántos grupos tiene cada grado. Sin dato: 6 por grado.
+function _pfLetrasDe(grado) {
+  const n = (window.__pfGrupos || [6, 6, 6])[(parseInt(grado, 10) || 1) - 1];
+  return 'ABCDEFGHIJKL'.slice(0, n === undefined ? 6 : n).split('');
+}
+function _pfTodosLosGrupos() {
+  return ['1', '2', '3'].reduce((todos, g) => todos.concat(_pfLetrasDe(g).map(l => g + l)), []);
+}
+
 function gruposDelGrado() {
   const grado = prefectoActual && prefectoActual.grado;
-  const letras = ['A', 'B', 'C', 'D', 'E', 'F'];
   // Versión local: si a la prefecta todavía no se le asignó un grado, se le
   // muestran TODOS los grupos (1A…3F) para que pueda reportar el que necesite.
   // (En la versión en línea el grado se le pone al crear su perfil, y ahí se
   // comporta igual que siempre: solo los grupos de su grado.)
-  if (!grado) return ['1', '2', '3'].reduce((todos, g) => todos.concat(letras.map(l => g + l)), []);
-  return letras.map(l => grado + l);
+  if (!grado) return _pfTodosLosGrupos();
+  return _pfLetrasDe(grado).map(l => grado + l);
 }
 
 function renderHorasGrupoLista() {
@@ -663,7 +671,7 @@ function abrirEditar(docId, maestro, horas, grupos) {
   const existing = document.getElementById('modal-editar');
   if (existing) existing.remove();
 
-  const todosGruposBase = ['1A','1B','1C','1D','1E','1F','2A','2B','2C','2D','2E','2F','3A','3B','3C','3D','3E','3F'];
+  const todosGruposBase = _pfTodosLosGrupos();
   const gradoActual = prefectoActual && prefectoActual.grado;
   const todosGrupos = gradoActual ? todosGruposBase.filter(g => g.charAt(0) === String(gradoActual)) : todosGruposBase;
 
@@ -751,7 +759,7 @@ function abrirEditarRetardo(docId, maestro, horaProg, horaLleg, grupoActual) {
   const existing = document.getElementById('modal-editar');
   if (existing) existing.remove();
 
-  const todosGruposBase = ['1A','1B','1C','1D','1E','1F','2A','2B','2C','2D','2E','2F','3A','3B','3C','3D','3E','3F'];
+  const todosGruposBase = _pfTodosLosGrupos();
   const gradoActual = prefectoActual && prefectoActual.grado;
   const todosGrupos = gradoActual ? todosGruposBase.filter(g => g.charAt(0) === String(gradoActual)) : todosGruposBase;
 
@@ -878,7 +886,7 @@ async function iniciarAsistencia() {
 
 async function cargarAsistenciaFecha(grado, letra, fecha) {
   const wrap = document.getElementById('asistencia-form-wrap');
-  const grupos = ['A', 'B', 'C', 'D', 'E', 'F'];
+  const grupos = _pfLetrasDe(grado);
   const docId = grado + '_' + fecha;
   wrap.innerHTML = '<p style="color:#999;font-size:0.85rem;">Cargando...</p>';
   let datosExistentes = null;
