@@ -99,7 +99,7 @@ function _pfBotonWhatsapp(url, texto) {
   d.id = "pf-wa-boton";
   d.style.cssText = "position:fixed;left:10px;right:10px;bottom:12px;z-index:9999;background:#fff;border-radius:14px;padding:14px;box-shadow:0 6px 24px rgba(0,0,0,.35);font-family:system-ui,sans-serif";
   d.innerHTML = "<div style='font-weight:700;font-size:15px;color:#1a237e;margin-bottom:4px'>✅ Reporte guardado en este celular</div>" +
-    "<div style='font-size:12.5px;color:#57534e;margin-bottom:10px'>Mándalo a la dirección. Si WhatsApp no abre, copia el reporte y pégalo donde quieras.</div>";
+    "<div style='font-size:12.5px;color:#57534e;margin-bottom:10px'>Se manda a la dirección" + (window.__pfWa ? " (WhatsApp +" + String(window.__pfWa).replace(/\D/g, "") + ")" : " (falta el WhatsApp en el enlace de tu escuela)") + ". Si WhatsApp no abre, copia el reporte y pégalo donde quieras.</div>";
   var a = document.createElement("a");
   a.href = url; a.target = "_blank"; a.rel = "noopener"; a.textContent = "📲 Enviar por WhatsApp";
   a.style.cssText = "display:block;background:#16a34a;color:#fff;text-align:center;padding:14px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;margin-bottom:8px";

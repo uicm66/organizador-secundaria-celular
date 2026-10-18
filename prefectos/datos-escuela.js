@@ -20,7 +20,9 @@
   }
   function aRespuesta(d) {
     var maestros = ((d && d.m) || []).map(function (x, i) { return { id: "m" + i, nombre: x[0] || "", academia: x[1] || "" }; });
-    var esc = { nombre: (d && d.n) || "", siglas: (d && d.s) || "", whatsapp: (d && d.w) || "" };
+    // wa.me necesita código de país: un número de 10 dígitos (México) recibe el 52, también si el enlace es viejo.
+    var w = String((d && d.w) || "").replace(/\D/g, ""); if (w.length === 10) w = "52" + w;
+    var esc = { nombre: (d && d.n) || "", siglas: (d && d.s) || "", whatsapp: w };
     return { maestros: maestros, escuela: esc };
   }
   var lista = null;
