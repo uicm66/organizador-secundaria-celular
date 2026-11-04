@@ -1662,7 +1662,7 @@ async function imprimirHojaActual(){
       setTimeout(() => marco.remove(), 120000);
     };
     marco.srcdoc = "<!doctype html><html><head><meta charset='utf-8'><title>Plantilla 911.5 — hoja " + (pantalla + 1) + "</title>" +
-      "<style>@page{size:11in 8.5in;margin:0}html,body{margin:0;padding:0;background:#fff}img{display:block;width:11in;height:8.5in}</style></head><body><img src='" + img + "'></body></html>";
+      "<style>@page{size:11in 8.5in;margin:0}html,body{margin:0;padding:0;background:#fff}img{display:block;width:11in;height:8.5in}</style></head><body><img src='" + img + "'><a href="./" id="fcp-volver-app" style="position:fixed;top:max(10px,env(safe-area-inset-top));right:10px;z-index:2147483647;padding:9px 14px;background:#0d4f4a;color:#fff;border-radius:20px;font:600 13px -apple-system,system-ui,sans-serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">← Volver a la app</a></body></html>";
   } catch (e) {
     boton.disabled = false; boton.textContent = textoOriginal;
     aviso("No se pudo preparar la impresión (" + (e && e.message ? e.message : e) + "). Usa «⬇ Esta hoja» y la imprimes desde el PDF.", "error");

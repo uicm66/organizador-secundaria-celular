@@ -1,1 +1,1 @@
-export function initCargaDocentePDF(_0x3cf563){return{};}
+export function initCargaDocentePDF(_0xf108df){return{};}
