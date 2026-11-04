@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plantilla 911.5 — Inicio de curso</title>
+<style>
+  :root{
+    --verde:#132A27;
+    --crema:#EDE2D1;
+    --dorado:#D5BF90;
+    --olivo:#AF884D;
+    --tinta:#231F20;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;color:var(--tinta);background:#eef1f0}
+  button{font-family:inherit;cursor:pointer}
+
+  /* ─────────── Login ─────────── */
+  #login-screen{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:20px}
+  #login-caja{background:white;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.15);width:100%;max-width:380px;overflow:hidden}
+  #login-head{background:var(--verde);padding:18px 22px}
+  #login-head img{height:38px}
+  #login-head div{color:var(--dorado);font-size:13px;margin-top:6px}
+  #login-body{padding:22px}
+  #login-body label{display:block;font-size:12px;font-weight:600;margin:0 0 4px}
+  #login-body input{width:100%;padding:10px 12px;border:1px solid #d6d3d1;border-radius:8px;font-size:14px;margin-bottom:12px}
+  #login-btn{width:100%;padding:11px;border:none;border-radius:8px;background:var(--verde);color:white;font-size:14px;font-weight:700}
+  #btn-alta-dir{width:100%;padding:10px;margin-top:8px;border:1px solid var(--verde);border-radius:8px;background:white;color:var(--verde);font-size:12.5px;font-weight:700}
+  #login-error{display:none;background:#fef2f2;border:1px solid #fca5a5;color:#991b1b;border-radius:8px;padding:9px 11px;font-size:12px;margin-bottom:12px;white-space:pre-line}
+  #login-nota{font-size:11px;color:#78716c;margin-top:12px;line-height:1.5}
+
+  /* ─────────── Barra superior (no se imprime) ─────────── */
+  #barra{background:var(--verde);color:white;padding:8px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+  #barra .tit{font-weight:700;font-size:14px}
+  #barra .sep{flex:1}
+  #barra .quien{font-size:12px;color:var(--dorado)}
+  #barra button{padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:white;font-size:12px;font-weight:600}
+  #barra button.principal{background:var(--dorado);border-color:var(--dorado);color:var(--verde)}
+  /* Salir / cerrar sesion: mas grande y visible, arriba a la derecha. */
+  #barra #btn-logout{margin-left:10px;padding:11px 22px;font-size:14px;font-weight:700;background:#b91c1c;border:1px solid #b91c1c;color:#fff;border-radius:9px;letter-spacing:.3px}
+  #barra #btn-logout:hover{background:#991b1b;border-color:#991b1b}
+  #barra .ciclo{font-size:12px;display:flex;align-items:center;gap:6px;color:var(--dorado)}
+  #barra .ciclo input{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:6px;color:white;padding:5px 8px;font-size:12px;width:150px;font-family:inherit}
+  #barra .nav{display:flex;gap:6px}
+  #barra .nav button{padding:6px 10px}
+
+  /* ─────────── Pasos (no se imprime) ─────────── */
+  #pasos{background:#f7f5f0;border-bottom:1px solid #e0dbd0;padding:8px 14px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;
+         max-height:5.6em;overflow-y:auto}
+  #pasos .doc{font-size:10.5px;font-weight:700;color:var(--verde);margin:0 2px 0 8px;border-left:2px solid var(--olivo);padding-left:7px}
+  #pasos .p{padding:5px 10px;border-radius:20px;border:1px solid #ddd6c7;background:white;font-size:11px;color:#57534e;cursor:pointer}
+  #pasos .p.activo{background:var(--verde);border-color:var(--verde);color:white;font-weight:700}
+  #avisos{max-width:1100px;margin:12px auto 0;padding:0 14px}
+  #avisos div{border-radius:10px;padding:9px 12px;font-size:12px}
+
+  /* ─────────── La hoja ─────────── */
+  #escenario{width:100%;display:flex;justify-content:center;align-items:flex-start;
+             padding:14px 0 40px;overflow:auto;-webkit-overflow-scrolling:touch}
+  #lienzo{position:relative;flex:0 0 auto}
+  #hoja{width:11in;height:8.5in;background:white;position:relative;transform-origin:top left;
+        box-shadow:0 6px 30px rgba(0,0,0,.18);overflow:hidden;color:var(--tinta)}
+  #hoja .pag{position:absolute;right:.55in;bottom:.20in;color:#8a8a8a;font-size:7.5pt;letter-spacing:.4px}
+
+  /* Encabezado de PORTADA (pagina 1) */
+  .hdrP{position:absolute;left:0;top:0;width:11in;height:1.21in;background:var(--verde)}
+  .hdrP img{position:absolute;left:.683in;top:.433in;width:1.933in;height:.44in}
+  .hdrP .c1{position:absolute;left:2.6in;right:2.6in;top:.20in;text-align:center;color:#fff;font-size:13pt}
+  .hdrP .c2{position:absolute;left:2.6in;right:2.6in;top:.42in;text-align:center;color:#fff;font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:26pt;line-height:1.05}
+  .hdrP .c3{position:absolute;left:2.6in;right:2.6in;top:1.00in;text-align:center;color:#fff;font-size:12pt}
+  .hdrP .c3 input{font:inherit;color:#fff;background:transparent;border:none;text-align:left;width:1.05in;padding:0}
+  .hdrP .c4{position:absolute;right:.72in;top:.44in;color:var(--dorado);font-size:30pt;font-weight:700}
+  .banda{position:absolute;left:0;top:1.21in;width:11in;height:.37in;background:var(--crema);display:flex;align-items:center}
+  .banda .izq{margin-left:.71in;color:var(--olivo);font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:15pt}
+  .banda .cen{position:absolute;left:0;right:0;text-align:center;color:var(--verde);font-weight:700;font-size:13.5pt;letter-spacing:.3px}
+  .pieP{position:absolute;left:0;bottom:0;width:11in;height:.66in;background:var(--verde);color:#fff;padding:.11in .71in 0 .71in;font-size:7.6pt;line-height:1.35}
+
+  /* Encabezado INTERIOR (paginas 2 a 15) */
+  .hdrI{position:absolute;left:0;top:0;width:11in;height:.86in;background:var(--verde);color:#fff}
+  .hdrI .a{position:absolute;left:.71in;top:.19in;font-size:12pt;font-weight:700}
+  .hdrI .b{position:absolute;right:.55in;top:.20in;font-size:11pt;color:var(--dorado)}
+  .hdrI .c{position:absolute;left:.71in;top:.47in;font-size:10.5pt;color:#cfd8d5}
+  .hdrI .d{position:absolute;right:.55in;top:.42in;font-size:16pt;font-weight:700;color:var(--dorado)}
+
+  /* Cuerpo de la portada: filas con posicion exacta */
+  .fila{position:absolute;left:.71in;width:9.58in;display:flex;align-items:flex-end}
+  .et{font-size:10pt;color:var(--tinta);white-space:nowrap;margin-right:5px}
+  .ln{flex:1;border:none;border-bottom:1px solid var(--tinta);background:transparent;font-size:10pt;padding:0 3px 1px;font-family:inherit;color:var(--tinta);min-width:40px}
+  .ln:focus{outline:none;background:#fffbe6}
+  .cajas{display:flex;gap:1.5px}
+  .cajas input{width:.225in;height:.235in;border:1px solid var(--tinta);text-align:center;font-size:9.5pt;padding:0;font-family:inherit;color:var(--tinta)}
+  .cajas input:focus{outline:none;background:#fffbe6}
+  .sub{font-size:6.6pt;text-align:center;color:var(--tinta)}
+
+  /* Cuerpo interior: bloques en flujo */
+  #flujo{position:absolute;left:.71in;top:.99in;width:9.58in}
+  #flujo .nota{font-size:10.5pt;margin:0 0 .30in}
+  #flujo .nota.chica{font-size:8.2pt;line-height:1.3;text-align:justify;margin:0 0 .14in}
+  #flujo .h2.chico{margin:.10in 0 .22in}
+  #flujo .h2{color:var(--verde);font-weight:700;font-size:13.5pt;letter-spacing:.3px;margin:.20in 0 .35in}
+  #flujo .preg{font-size:9.5pt;line-height:1.4;margin:0 0 .45in;text-align:justify}
+  #flujo .preg.tight{margin-bottom:.28in}
+  #flujo .hl{color:var(--olivo);font-weight:600}
+  #flujo .obs{font-size:9.5pt;line-height:1.4;margin:0 0 .30in;font-weight:700}
+  #flujo .tabTit{color:var(--olivo);font-weight:700;font-size:9.5pt;text-align:center;margin:.10in 0 .16in}
+
+  .tbl{border-collapse:collapse;margin:0 0 .30in;font-size:8.6pt;width:100%}
+  .tbl th{font-weight:600;text-align:right;vertical-align:bottom;padding:0 9px 3px;line-height:1.12}
+  .tbl th:first-child{text-align:right}
+  .tbl td{text-align:right;padding:0.5px 9px;white-space:nowrap}
+  .tbl td.gr{font-weight:700;text-align:right}
+  .tbl td.grn{font-weight:400;text-align:right}
+  .tbl td.gr2{font-weight:400;text-align:right;font-size:8.2pt}
+  .tbl input{width:.58in;height:.185in;border:1px solid var(--tinta);font-size:8.6pt;text-align:center;padding:0;font-family:inherit;background:white}
+  .tbl input:focus{outline:none;background:#fffbe6}
+  .tbl.tot td.gr{font-weight:700}
+  /* Celdas sombreadas: "No utilice las áreas sombreadas" */
+  .sh{width:.58in;height:.185in;background:#dcdcdc;border:1px solid var(--tinta)}
+  .tbl td.lbl{font-size:8pt;text-align:right;white-space:nowrap;padding:0.5px 5px}
+  .tbl th.tg{text-align:center}
+
+  /* Bloques de dos columnas (preguntas 2-14 de la Seccion III): el texto de
+     la pregunta a la izquierda y la tabla/captura a la derecha. */
+  .f2{display:flex;gap:.28in;margin:0 0 .26in;align-items:flex-start}
+  .f2 .izq{width:3.85in;flex-shrink:0;font-size:9.5pt;line-height:1.4}
+  .f2 .der{flex:1;min-width:0}
+  .f2 .der .tbl{margin:0}
+  .f2 .der .tt{color:var(--olivo);font-weight:700;font-size:9.5pt;text-align:center;margin:0 0 .08in}
+  .tbl.chico input{width:.42in;height:.165in}
+  .tbl.chico .sh{width:.42in;height:.165in}
+  .tbl.chico td{padding:0 5px}
+  .tbl.chico th{padding:0 5px 2px;font-size:8pt}
+  .tbl.chico td.lbl{font-size:7.6pt;padding:0 4px;white-space:normal;max-width:1.55in}
+  .tbl.chico td.grn,.tbl.chico td.gr{font-size:7.8pt;line-height:1.15}
+  .tbl.chico td.grn,.tbl.chico td.gr{white-space:normal;font-size:8pt}
+  .dosCol{display:flex;gap:.28in;margin-bottom:.18in}
+  .dosCol>div{min-width:0}
+  .clave{display:flex;align-items:flex-end;gap:6px;font-size:9.5pt;margin-top:.05in}
+  .opc{display:flex;align-items:center;gap:7px;font-size:9.5pt;margin:0 0 .15in}
+  .opc2{display:flex;align-items:center;gap:7px;font-size:9.5pt;margin:0 0 .10in}
+  .opc2 .sep{width:1.1in}
+  .chk{width:.14in;height:.14in;accent-color:#231F20;margin:0}
+  .obs-box{width:100%;height:1.9in;border:1px solid var(--tinta);background:transparent;font-family:inherit;font-size:9.5pt;line-height:1.7;padding:4px 8px;resize:none;box-sizing:border-box}
+  .firmas{display:flex;gap:.6in;margin-top:.40in;align-items:flex-start}
+  .firma{flex:1;text-align:center;font-size:9.5pt}
+  .firma .l{height:.55in;border-bottom:1px solid var(--tinta);margin-bottom:4px}
+  .sello{width:2.5in;height:1.45in;border:1px solid var(--tinta);display:flex;align-items:flex-end;justify-content:center;font-size:8.6pt;text-align:center;padding-bottom:3px}
+  .clave input.cl{width:.42in;height:.19in;border:1px solid var(--tinta);text-align:center;font-size:8.6pt;font-family:inherit;padding:0}
+  .clave .linea{flex:1;border-bottom:1px solid var(--tinta);height:.185in}
+
+  /* ─────────── Celular ─────────── */
+  .nav.zoom button{padding:8px 12px;font-size:15px;line-height:1;min-width:44px}
+  @media (max-width: 780px){
+    #barra{padding:7px 9px;gap:6px}
+    #barra .tit{font-size:12.5px;width:100%}
+    #barra .ciclo{font-size:11px;gap:4px}
+    #barra .ciclo input{width:92px;padding:4px 6px;font-size:11px}
+    #barra button{padding:8px 10px;font-size:11.5px}
+    #barra #btn-logout{margin-left:4px;padding:9px 14px;font-size:13px}
+    #barra .quien{font-size:11px;width:100%}
+    #barra .sep{display:none}
+    #pasos{padding:6px 9px;gap:5px}
+    #pasos .p{font-size:10px;padding:4px 8px}
+    #avisos{padding:0 9px;margin-top:8px}
+    #escenario{padding:8px 0 24px}
+  }
+
+  /* ─────────── Hoja CONVERTIDA desde un PDF oficial ───────────
+     Los rótulos y las casillas se colocan por coordenadas, en pulgadas y con
+     el origen arriba-izquierda, tal como los extrae el motor de importación. */
+  #cuerpo .pdft{position:absolute;color:var(--tinta);white-space:pre;line-height:1;font-family:Arial,Helvetica,sans-serif}
+  #cuerpo input.pdfc{position:absolute;border:1px solid var(--tinta);background:transparent;
+        font-family:inherit;font-size:8pt;text-align:center;padding:0;color:var(--tinta);box-sizing:border-box}
+  #cuerpo input.pdfc:focus{outline:none;background:#fffbe6}
+  #cuerpo .pdfbanda{position:absolute}
+  #cuerpo .pdfsvg{position:absolute;left:0;top:0;pointer-events:none}
+  /* Logotipo del encabezado recortado del PDF original (nítido, idéntico). */
+  #cuerpo .pdflogo{position:absolute;pointer-events:none}
+  /* Las RAYAS de escribir (renglones del formato) no llevan borde: la raya
+     ya viene dibujada en la capa SVG y el campo va encima, invisible. */
+  #cuerpo input.pdfc.raya{border:0;text-align:left;font-size:9pt}
+
+  /* ─────────── Impresión ─────────── */
+  @page{size:11in 8.5in;margin:0}
+  @media print{
+    html,body{background:white}
+    .no-print{display:none !important}
+    #escenario{padding:0;display:block;height:auto !important;overflow:visible !important}
+    #lienzo{width:auto !important;height:auto !important}
+    #hoja{transform:none !important;box-shadow:none;margin:0}
+    .ln:focus,.cajas input:focus,.tbl input:focus{background:transparent}
+    .ln,.tbl input{background:transparent}
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ LOGIN ══════════ -->
+<div id="login-screen">
+  <div id="login-caja">
+    <div id="login-head">
+      <img src="assets/911-logo.png" alt="SEP">
+      <div>Plantilla 911.5 — Inicio de curso</div>
+    </div>
+    <div id="login-body">
+      <div id="login-error"></div>
+      <label>Correo</label>
+      <input id="login-email" type="email" autocomplete="username" placeholder="correo@ejemplo.com">
+      <label>Contraseña</label>
+      <input id="login-pass" type="password" autocomplete="current-password" placeholder="••••••••">
+      <button id="login-btn">Entrar</button>
+      <button id="btn-alta-dir" type="button" style="display:none">Soy Dirección: activar mi cuenta</button>
+      <div id="login-nota">Escribe <b>tu usuario y tu contraseña</b> y dale a <b>Entrar</b>. Las secretarias usan las que les dio Dirección; Dirección usa las mismas con las que entra al sistema. Para entrar con <b>otra cuenta</b>, primero dale a <b>Salir</b>.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ APP ══════════ -->
+<div id="app-screen" style="display:none">
+  <div id="barra" class="no-print">
+    <span class="tit">Plantilla 911.5</span>
+    <span class="ciclo">Ciclo: <input id="ciclo-txt" type="text"></span>
+    <span class="nav"><button id="btn-ant">‹</button><button id="btn-sig">›</button></span>
+    <span class="nav zoom"><button id="zoom-menos" title="Alejar">🔍−</button><button id="zoom-mas" title="Acercar">🔍+</button><button id="zoom-ok" title="Ajustar a la pantalla">⤢</button></span>
+    <span class="sep"></span>
+    <span class="quien" id="usuario-label"></span>
+    <button id="btn-guardar" class="principal">Guardar</button>
+    <button id="btn-pdf" class="principal">⬇ Descargar PDF</button>
+    <button id="btn-prellenar" style="display:none" title="Llena con datos del sistema las casillas vacías">⚙ Prellenar con datos del sistema</button>
+    <button id="btn-subir-formato" style="display:none" title="Convierte el PDF oficial de este ciclo (y sus anexos) y deja todas sus hojas llenables">⬆ Subir formato o anexos</button>
+    <button id="btn-pdf-hoja" title="Descarga en PDF solo la hoja que estás viendo">⬇ Esta hoja</button>
+    <button id="btn-imprimir">🖨 Imprimir</button>
+    <button id="btn-logout">Salir</button>
+  </div>
+  <div id="pasos" class="no-print"></div>
+  <div id="avisos" class="no-print"></div>
+  <div id="escenario">
+   <div id="lienzo">
+    <div id="hoja">
+      <div id="hdr"></div>
+      <div id="cuerpo"></div>
+      <div id="flujo"></div>
+      <div class="pag" id="pag-num"></div>
+    </div>
+   </div>
+  </div>
+</div>
+
+<!-- Motor de conversión de formatos: lo comparten la herramienta de
+     importación (911-importar.html) y esta Plantilla. No depende de pdf.js. -->
+<script src="911-motor.js"></script>
+<script type="module">
+// Versión LOCAL: aqui NO hay Firebase. Las mismas funciones las da el motor
+// propio de esta copia (src/local-db/motorLocal.js), que guarda en ESTE equipo
+// (IndexedDB) y responde igual que el SDK: mismos nombres, mismos documentos.
+// Se importan los MISMOS 15 nombres que antes venian del SDK, para no tocar
+// nada mas de la pagina.
+import {
+  initializeApp, getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut,
+  browserLocalPersistence, setPersistence,
+  getFirestore, doc, getDoc, getDocs, setDoc, collection, deleteDoc, writeBatch,
+} from "./src/local-db/motorLocal.js";
+
+// Cuentas LOCALES de esta computadora (no hay correo ni servidor): la primera
+// vez que se entra, la propia pagina da de alta al primer usuario como
+// "direccion" en config/acceso_911 (misma logica que la version en linea, pero
+// guardado aqui). Ojo: en esta version la sesion es la MISMA de la aplicacion,
+// asi que Direccion entra sin volver a escribir su contraseña.
+const app = initializeApp();
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// El modulo compartido de ciclos (src/modules/ciclos/ciclos.js) arma la ruta
+// del documento usando los ayudantes que la app principal publica en window.
+// Aqui hay que publicarlos igual, o falla la lectura y el guardado.
+window.auth = auth;
+window.db = db;
+window.doc = doc;
+window.getDoc = getDoc;
+window.getDocs = getDocs;
+window.setDoc = setDoc;
+window.collection = collection;
+window.deleteDoc = deleteDoc;
+window.writeBatch = writeBatch;
+
+const { cargarCicloActivo, obtenerCicloActivo, refDocCiclo } = await import("./src/modules/ciclos/ciclos.js");
+
+const $ = (id) => document.getElementById(id);
+const esc = (t) => String(t == null ? "" : t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+let ciclo = "";
+let usuario = null;
+let cargadoEn = null;
+let pantalla = 0;
+let altaDirEnCurso = false;
+// Por omision se asume que YA hay Direccion (asi el boton de auto-alta nunca
+// aparece si no se pudo leer la lista).
+let hayDireccion = true;
+
+// ══════════ Definicion de las pantallas ══════════
+const C = (campo, n) => ({ campo, n });
+const L = (campo, ancho) => ({ campo, ln: true, ancho });
+
+// Filas con posicion exacta (solo portada).
+const PANTALLA_1 = [
+  { y:1.83, f:[ {t:"Clave del Centro de Trabajo:"}, C("cct",10), {t:"Turno:", sep:"1.0in"}, C("turno",1) ] },
+  { y:2.16, f:[ {t:"Nombre de la escuela:"}, L("escuela") ] },
+  { y:2.49, f:[ {t:"Vialidad principal:"}, L("vialidad_principal"), {t:"Vialidad posterior:", sep:"1.35in"}, L("vialidad_posterior") ] },
+  { y:2.82, f:[ {t:"Vialidad derecha:"}, L("vialidad_derecha"), {t:"Vialidad izquierda:", sep:"1.35in"}, L("vialidad_izquierda") ] },
+  { y:3.15, f:[ {t:"Número exterior:"}, L("num_exterior"), {t:"Número interior:", sep:"1.35in"}, L("num_interior") ] },
+  { y:3.48, f:[ {t:"Asentamiento humano:"}, L("asentamiento"), {t:"Código Postal:", sep:"1.3in"}, C("cp",5) ] },
+  { y:3.81, f:[ {t:"Entidad federativa:"}, L("entidad"), {t:"Municipio o alcaldía:", sep:"1.35in"}, L("municipio") ] },
+  { y:4.14, f:[ {t:"Localidad:"}, L("localidad") ] },
+  { y:4.47, f:[ {t:"Teléfono:"}, C("telefono",10), {t:"Extensión:", sep:".45in"}, C("extension",4), {t:"Celular:", sep:".45in"}, C("celular",10) ] },
+  { y:4.80, f:[ {t:"Sostenimiento:"}, L("sostenimiento") ] },
+  { y:5.13, f:[ {t:"Tipo / nivel / subnivel:"}, L("tipo_nivel") ] },
+  { y:5.46, f:[ {t:"Característica:"}, L("caracteristica") ] },
+  { y:5.79, f:[ {t:"Dependencia normativa:"}, L("dependencia") ] },
+  { y:6.12, f:[ {t:"Correo institucional:"}, L("correo") ] },
+  { y:6.42, f:[ {t:"Nombre del director de la escuela:"},
+                {t:"", ln:true, campo:"dir_apellido1", ancho:"2.05in", sub:"PRIMER APELLIDO"},
+                {t:"", ln:true, campo:"dir_apellido2", ancho:"2.05in", sep:".55in", sub:"SEGUNDO APELLIDO"},
+                {t:"", ln:true, campo:"dir_nombre", ancho:"2.05in", sep:".55in", sub:"NOMBRE(S)"} ] },
+  { y:6.88, f:[ {t:"CURP:"}, C("curp",18), {t:"RFC:", sep:".55in"}, C("rfc",13), {t:"Tipo:", sep:".35in"}, L("tipo") ] },
+  { y:7.21, f:[ {t:"Jefatura de sector:"}, C("jefatura_sector",6), {t:"Zona escolar:", sep:".8in"}, C("zona_escolar",5) ] },
+  { y:7.53, f:[ {t:"Servicio regional:"}, C("servicio_regional",4) ] },
+];
+
+// Columnas de tabla reutilizables
+const CT = { h:"Hombres" }, CM = { h:"Mujeres" }, CTOT = { h:"Total" }, CGR = { h:"Grupos" };
+const CHLI = { h:"Hablantes<br>de lenguas<br>indígenas" };
+const CNFM = { h:"Nacidos<br>fuera de<br>México" };
+const CAFRO = { h:"Afro-<br>descendientes" };
+const CDISC = { h:"Con<br>discapacidad" };
+const CTRAS = { h:"Con<br>trastorno" };
+const CAPT = { h:"Aptitudes<br>sobresalientes" };
+const COTR = { h:"Otras<br>condiciones" };
+const G = { h:"Grado" };
+const GRADOS = ["1o.", "2o.", "3o.", "Total"];
+
+const DEFS = [
+  { nombre:"Datos de identificación", tipo:"portada" },
+
+  { nombre:"I. Existencia y promovidos", tipo:"interior", linea1:"Información de fin del ciclo escolar 2023-2024", pag:"2", bloques:[
+    { t:"nota", txt:"NOTA: la fecha de corte para fin de ciclo, será al último día del ciclo" },
+    { t:"h2", txt:"I. EXISTENCIA Y PROMOVIDOS" },
+    { t:"preg", txt:'1. Escriba el número de <span class="hl">alumnas y alumnos</span> existentes al final del ciclo <b>2023-2024</b> (al último día del ciclo), desglosándolos por grado, sexo, grupos por grado, hablantes de lengua indígena, nacidos fuera de México, afrodescendientes, con discapacidad, con trastorno, aptitudes sobresalientes u otras condiciones.' },
+    { t:"tabla", id:"e1", cols:[G,CT,CM,CTOT,CGR,CHLI,CNFM,CAFRO,CDISC,CTRAS,CAPT,COTR], filas:GRADOS },
+    { t:"preg", txt:'2. Escriba el número de <span class="hl">alumnas y alumnos</span> promovidos del ciclo <b>2023-2024</b> desglosándolos por grado, sexo, hablantes de lengua indígena, nacidos fuera de México, con discapacidad, con trastorno, aptitudes sobresalientes u otras condiciones.' },
+    { t:"tabla", id:"e2", cols:[G,CT,CM,CTOT,CHLI,CNFM,CDISC,CTRAS,CAPT,COTR], filas:GRADOS },
+  ] },
+
+  { nombre:"II. Alumnado de otra escuela", tipo:"interior", linea1:"Información de inicio del ciclo escolar 2024-2025", pag:"3", bloques:[
+    { t:"nota", txt:"Nota: la fecha de corte para fin de ciclo, será al último día del ciclo" },
+    { t:"h2", txt:"II. ALUMNADO QUE PROVIENE DE OTRA ESCUELA" },
+    { t:"preg", txt:'1. Escriba por grado y sexo el número de alumnas y alumnos que provienen de otra escuela, desglosándolos según el lugar donde se encontraba la escuela (en la misma entidad federativa, otra entidad federativa o incluso en otro país).' },
+    { t:"tabla2", id:"oe1", cols:[
+        { h:"Grado" }, { h:"Misma entidad<br>federativa", span:2 }, { h:"Otra entidad<br>federativa", span:2 }, { h:"Otro país", span:2 }, { h:"Total", span:2 }
+      ], sub:[ "Hombres","Mujeres","Hombres","Mujeres","Hombres","Mujeres","Hombres","Mujeres" ],
+      filas:[ {et:"Nvo. Ingreso", gr:"1o."}, {et:"Repetidor", gr:""}, {et:"", gr:"2o."}, {et:"", gr:"3o."}, {et:"", gr:"Total"} ] },
+    { t:"preg tight", txt:'2. De las alumnas y alumnos provenientes de escuelas de otro país reportados en la pregunta anterior, desglóselos según el país o lugar y sexo.' },
+    { t:"tabla", id:"oe2", cols:[{h:"País o lugar"},CT,CM,CTOT], filas:["Estados Unidos","Canadá","Centroamérica y el Caribe","Sudamérica","África","Asia","Europa","Oceanía","Total"] },
+  ] },
+
+  { nombre:"III. Alumnado y grupos (1)", tipo:"interior", linea1:"Información de inicio del ciclo escolar 2024-2025", pag:"4", bloques:[
+    { t:"h2", txt:"III. ALUMNADO Y GRUPOS" },
+    { t:"preg tight", txt:'1. Escriba la cantidad de <span class="hl">alumnas y alumnos</span> inscritos a partir de la fecha de inicio de cursos, sumando las altas y restando las bajas hasta el <b>30 de septiembre</b>, desglosándola por grado, sexo, nuevo ingreso, repetidores y edad, así como el número de grupos existentes, por grado. Verifique que la suma de los subtotales de las <span class="hl">alumnas y alumnos</span> por edad sea igual al total.' },
+    { t:"nota", txt:"Nota: No utilice las áreas sombreadas." },
+    { t:"tabTit", txt:"Alumnas y alumnos por grado, sexo, nuevo ingreso, repetidores, edad y grupos" },
+    { t:"tablaG", id:"ag1", n:9, grupos:true,
+      cols:[{h:""},{h:""},{h:""},{h:"Menos de<br>12 años"},{h:"12 años"},{h:"13 años"},{h:"14 años"},{h:"15 años"},{h:"16 años"},{h:"17 años"},{h:"18 años<br>y más"},{h:"Total"},{h:"Grupos"}],
+      filas:[
+        { g:"1°", rs:5, s:"Hombres", rs2:2, e:"Nuevo ingreso", shade:[0] },
+        { e:"Repetidores", shade:[0] },
+        { s:"Mujeres", rs2:2, e:"Nuevo ingreso", shade:[0] },
+        { e:"Repetidores", shade:[0] },
+        { e:"Subtotal", bold:true, grupo:true },
+        { g:"2°", rs:5, s:"Hombres", rs2:2, e:"Nuevo ingreso", shade:[0] },
+        { e:"Repetidores", shade:[0] },
+        { s:"Mujeres", rs2:2, e:"Nuevo ingreso", shade:[0] },
+        { e:"Repetidores", shade:[0] },
+        { e:"Subtotal", bold:true, shade:[0], grupo:true },
+        { g:"3°", rs:5, s:"Hombres", rs2:2, e:"Nuevo ingreso", shade:[0,1] },
+        { e:"Repetidores", shade:[0,1] },
+        { s:"Mujeres", rs2:2, e:"Nuevo ingreso", shade:[0,1] },
+        { e:"Repetidores", shade:[0,1] },
+        { e:"Subtotal", bold:true, shade:[0,1], grupo:true },
+        { g:"Total", rs:5, s:"Hombres", rs2:2, e:"Nuevo ingreso", shade:[0] },
+        { e:"Repetidores", shade:[0] },
+        { s:"Mujeres", rs2:2, e:"Nuevo ingreso", shade:[0] },
+        { e:"Repetidores", shade:[0] },
+        { e:"Total", bold:true, grupo:true },
+      ] },
+  ] },
+
+  { nombre:"III. Alumnado y grupos (2)", tipo:"interior", linea1:"Información de inicio del ciclo escolar 2024-2025", pag:"5", bloques:[
+    { t:"fila2", izq:'2. Escriba por sexo, la cantidad de <span class="hl">alumnas y alumnos</span> indígenas o hablantes de lengua indígena.',
+      der: pintarTablaS({ id:"ig1", cols:[CT, CM, CTOT] }) },
+    { t:"fila2", izq:'3. Escriba el número de alumnas y alumnos que proceden de <b>escuela primaria general, indígena y/o comunitaria</b> desglosándolo por grado y sexo.',
+      der: pintarTabla2({ id:"pg1",
+        cols:[{h:""},{h:"Primero",span:2},{h:"Segundo"},{h:"Tercero"},{h:"Total"}],
+        sub:["Nvo. Ingreso","Repetidor","","",""],
+        filas:[{gr:"Primaria General",et:"Hombres"},{gr:"",et:"Mujeres"},
+               {gr:"Primaria Indígena",et:"Hombres"},{gr:"",et:"Mujeres"},
+               {gr:"Primaria Comunitaria",et:"Hombres"},{gr:"",et:"Mujeres"}] }) },
+    { t:"fila2", izq:'4. Escriba el nombre de la lengua materna que hablan las <span class="hl">alumnas y alumnos</span> procedentes de escuela primaria indígena.',
+      der:'<div class="tt">Lengua materna</div><div class="clave"><span>Clave</span><input class="cl" data-campo="lm_clave" maxlength="4" autocomplete="off"><span class="linea"></span></div>' },
+    { t:"fila2", izq:'5. Escriba la cantidad de <span class="hl">alumnas y alumnos</span> que son atendidos por la Unidad de Servicios de Apoyo a la Educación Regular (USAER), desglosándola por sexo.',
+      der: pintarTablaS({ id:"us1", cols:[CT, CM, CTOT] }) },
+  ] },
+
+  { nombre:"III. Alumnado y grupos (3)", tipo:"interior", linea1:"Información de inicio del ciclo escolar 2024-2025", pag:"6", bloques:[
+    { t:"preg tight", txt:'6. Escriba la cantidad de alumnas y alumnos con discapacidades, trastornos, aptitudes sobresalientes u otras condiciones (no consideradas en los rubros anteriores), desglosándolos por grado y sexo.' },
+    { t:"tabla2", id:"cd1", chico:true,
+      cols:[{h:"Condición del alumnado"},{h:"Primero",span:3},{h:"Segundo",span:3},{h:"Tercero",span:3},{h:"Total",span:3}],
+      sub:["Hom","Muj","Total","Hom","Muj","Total","Hom","Muj","Total","Hom","Muj","Total"],
+      filas:["Ceguera","Baja visión","Sordera","Hipoacusia","Sordoceguera","Discapacidad motriz","Discapacidad intelectual",
+             "Discapacidad psicosocial","Trastorno del espectro autista","Discapacidad múltiple","TDAH*",
+             "Aptitudes sobresalientes","Otras condiciones","Total"] },
+    { t:"nota", txt:"*Trastorno por déficit de atención e hiperactividad" },
+  ] },
+
+  { nombre:"III. Alumnado y grupos (4)", tipo:"interior", linea1:"Información de inicio del ciclo escolar 2024-2025", pag:"7", bloques:[
+    { t:"fila2", izq:'7. Escriba el número de alumnas y alumnos nacidos fuera de México, desglosándolos por sexo.',
+      der: pintarTabla({ id:"nm1", cols:[{h:"País o lugar"},CT,CM,CTOT],
+        filas:["Estados Unidos","Canadá","Centroamérica y el Caribe","Sudamérica","África","Asia","Europa","Oceanía","Total"] }) },
+    { t:"obs", txt:"(DE LA PREGUNTA 8 A LA 11 CONSIDERE LA INFORMACIÓN DE FIN DE CURSOS)." },
+    { t:"preg tight", txt:'8. Escriba el número de alumnas y alumnos egresados de 3er. grado durante el ciclo escolar <b>2023-2024</b> (incluya a los regularizados al 30 de septiembre), desglosándolos por edad, sexo, hablantes de lengua indígena, nacidos fuera de México, con discapacidad, con trastorno, aptitudes sobresalientes u otras condiciones.' },
+    { t:"tabla", id:"eg1", cols:[{h:"Edad"},CT,CM,CTOT,CHLI,CNFM,CDISC,CTRAS,CAPT,COTR],
+      filas:["13 años o menos","14 años","15 años","16 años","17 años","18 años y más","Total"] },
+  ] },
+
+  { nombre:"III. Alumnado y grupos (5)", tipo:"interior", linea1:"Información de inicio del ciclo escolar 2024-2025", pag:"8", bloques:[
+    { t:"preg tight", txt:'9. Escriba el número de alumnas y alumnos que reprobaron una o más asignaturas durante el ciclo escolar <b>2023-2024</b>, desglosándolos por grado, sexo, hablantes de lengua indígena, nacidos fuera de México, con discapacidad, con trastorno, aptitudes sobresalientes u otras condiciones.' },
+    { t:"tabla", id:"rp1", cols:[G,CT,CM,CTOT,CHLI,CNFM,CDISC,CTRAS,CAPT,COTR], filas:GRADOS },
+    { t:"preg tight", txt:'10. De las alumnas y alumnos reportados en la pregunta anterior, escriba cuántos se regularizaron (aprobaron todas las asignaturas) al <b>30 de septiembre</b>, desglosándolos por grado, sexo, hablantes de lengua indígena, nacidos fuera de México, con discapacidad, con trastorno, aptitudes sobresalientes u otras condiciones.' },
+    { t:"tabla", id:"rg1", cols:[G,CT,CM,CTOT,CHLI,CNFM,CDISC,CTRAS,CAPT,COTR], filas:GRADOS },
+    { t:"nota", txt:"Nota: La edad de las alumnas y alumnos regularizados deberá ser la que se reportó para ellos al inicio de cursos del ciclo escolar anterior (al 1o. de septiembre)." },
+  ] },
+
+  { nombre:"III. Alumnado y grupos (6)", tipo:"interior", linea1:"Información de inicio del ciclo escolar 2024-2025", pag:"9", bloques:[
+    { t:"fila2", izq:'11. De las alumnas y alumnos reportados en la pregunta 9, escriba la cantidad de ellos que están inscritos en el presente ciclo escolar y continúan como <b>irregulares</b> (adeudan asignaturas), según sexo y el grado que cursan actualmente.',
+      der: pintarTabla2({ id:"ir1", chico:true,
+        cols:[{h:""},{h:"SEGUNDO",span:2},{h:"TERCERO",span:2},{h:"TOTAL",span:2}],
+        sub:["Hombres","Mujeres","Hombres","Mujeres","Hombres","Mujeres"], filas:[""] }) },
+    { t:"obs", txt:"LA SIGUIENTE PREGUNTA ÚNICAMENTE DEBERÁ SER CONTESTADA POR TELESECUNDARIAS." },
+    { t:"fila2", izq:'12. Escriba, por grado, el número de directivos con grupo y docentes.<br><b>IMPORTANTE:</b> Si un profesor atiende más de un grado, anótelo en el rubro correspondiente; el total debe coincidir con la suma de directivo con grupo más personal docente de la pregunta 1 de la sección IV. PERSONAL POR FUNCIÓN.',
+      der: pintarTablaS({ id:"ts1", cols:[{h:"Primero"},{h:"Segundo"},{h:"Tercero"},{h:"Más de<br>un grado"},{h:"Total"}] }) },
+    { t:"fila2", izq:'13. Escriba el número de alumnas y alumnos <b>afrodescendientes</b> por autoadscripción de los padres, desglosándolos por sexo.',
+      der: pintarTablaS({ id:"af1", cols:[CT, CM, CTOT] }) },
+  ] },
+  { nombre:"III. Alumnado y grupos (7)", tipo:"interior", linea1:"Información de inicio del ciclo escolar 2024-2025", pag:"10", bloques:[
+    { t:"preg tight", txt:'14. Escriba el número de alumnas y alumnos, según su lugar de residencia y desglóselos por sexo.' },
+    { t:"html", html:'<div style="display:flex;gap:.30in">'
+      + '<div style="flex:1">' + pintarTabla({ id:"re1", cols:[{h:""},CT,CM],
+          filas:["Aguascalientes","Baja California","Baja California Sur","Campeche","Coahuila","Colima","Chiapas","Chihuahua",
+                 "Ciudad de México","Durango","Guanajuato","Guerrero","Hidalgo","Jalisco","México","Michoacán"] }) + "</div>"
+      + '<div style="flex:1">' + pintarTabla({ id:"re2", cols:[{h:""},CT,CM],
+          filas:["Morelos","Nayarit","Nuevo León","Oaxaca","Puebla","Querétaro","Quintana Roo","San Luis Potosí","Sinaloa","Sonora",
+                 "Tabasco","Tamaulipas","Tlaxcala","Veracruz","Yucatán","Zacatecas","Fuera de México","Total"] }) + "</div>"
+      + "</div>" },
+  ] },
+  { nombre:"IV. Personal por función (1)", tipo:"interior", linea1:"Información de inicio del ciclo escolar 2024-2025", pag:"11", bloques:[
+    { t:"h2", txt:"IV. PERSONAL POR FUNCIÓN" },
+    { t:"preg tight", txt:'1. Escriba la cantidad de personal según su función (indicada en el cuadro), nivel máximo de estudios y sexo, independientemente de su nombramiento, tipo y fuente de pago.' },
+    { t:"html", html:'<div class="nota chica"><b>Notas:</b> a) Si una persona desempeña dos o más funciones anótela en aquella a la que dedique más tiempo.  b) Si en la tabla correspondiente al NIVEL EDUCATIVO no se encuentra el nivel requerido, anótelo en el NIVEL que considere equivalente o en Otros.  c) Considere exclusivamente al personal que labora en el turno al que se refiere este cuestionario, independientemente de que labore en otro turno. <b>continúa</b></div>' },
+    { t:"tabla", id:"pf1", chico:true,
+      cols:[{h:"Nivel Educativo"},
+        {h:"Personal directivo<br>Con grupo<br>Hombres"},{h:"Personal directivo<br>Con grupo<br>Mujeres"},
+        {h:"Personal directivo<br>Sin grupo<br>Hombres"},{h:"Personal directivo<br>Sin grupo<br>Mujeres"},
+        {h:"Subdirector de gestión escolar<br>Hombres"},{h:"Subdirector de gestión escolar<br>Mujeres"},
+        {h:"Personal docente<br>Hombres"},{h:"Personal docente<br>Mujeres"},
+        {h:"Tutores<br>Hombres"},{h:"Tutores<br>Mujeres"}],
+      filas:["Primaria incompleta","Primaria terminada","Secundaria incompleta","Secundaria terminada","Profesional técnico",
+             "Bachillerato incompleto","Bachillerato terminado","Normal preescolar incompleta","Normal preescolar terminada",
+             "Normal primaria incompleta","Normal primaria terminada","Normal superior incompleta","Normal superior pasante",
+             "Normal superior titulado","Licenciatura incompleta","Licenciatura pasante","Licenciatura titulado",
+             "Maestría incompleta","Maestría graduado","Doctorado incompleto","Doctorado graduado","Otros*","Subtotales"] },
+    { t:"nota", txt:"*Especifique:" },
+  ] },
+  { nombre:"IV. Personal por función (2)", tipo:"interior", linea1:"Información de inicio del ciclo escolar 2024-2025", pag:"12", bloques:[
+    { t:"h2", txt:"IV. PERSONAL POR FUNCIÓN (continuación)" },
+    { t:"html", html:'<div class="nota chica"><b>Nota:</b> Incluir a todos los profesores con asignaturas de actividades tecnológicas como pesquera, forestal, agropecuaria, etc. <b>concluye</b></div>' },
+    { t:"tabTit", txt:"PERSONAL DOCENTE ESPECIAL" },
+    { t:"tabla", id:"pf2", chico:true,
+      cols:[{h:"Nivel Educativo"},
+        {h:"Profesores de educación física<br>Hombres"},{h:"Profesores de educación física<br>Mujeres"},
+        {h:"Profesores de actividades artísticas<br>Hombres"},{h:"Profesores de actividades artísticas<br>Mujeres"},
+        {h:"Profesores de actividades tecnológicas<br>Hombres"},{h:"Profesores de actividades tecnológicas<br>Mujeres"},
+        {h:"Profesores de idiomas<br>Hombres"},{h:"Profesores de idiomas<br>Mujeres"},
+        {h:"Personal administrativo, auxiliar y de servicios<br>Hombres"},{h:"Personal administrativo, auxiliar y de servicios<br>Mujeres"}],
+      filas:["Primaria incompleta","Primaria terminada","Secundaria incompleta","Secundaria terminada","Profesional técnico",
+             "Bachillerato incompleto","Bachillerato terminado","Normal preescolar incompleta","Normal preescolar terminada",
+             "Normal primaria incompleta","Normal primaria terminada","Normal superior incompleta","Normal superior pasante",
+             "Normal superior titulado","Licenciatura incompleta","Licenciatura pasante","Licenciatura titulado",
+             "Maestría incompleta","Maestría graduado","Doctorado incompleto","Doctorado graduado","Otros*","Subtotales"] },
+    { t:"nota", txt:"*Especifique:" },
+  ] },
+  { nombre:"V. Aulas", tipo:"interior", linea1:"Información de inicio del ciclo escolar 2024-2025", pag:"13", bloques:[
+    { t:"html", html:'<div class="dosCol">'
+      + '<div style="flex:1.08">'
+      +   '<div class="preg tight" style="margin-bottom:.10in">2. Escriba la cantidad de personal administrativo, auxiliar y de servicios, según su función y sexo. (El total debe ser igual al total del rubro de personal administrativo, auxiliar y de servicios reportado en el punto 1 de esta sección).</div>'
+      +   pintarTabla({ id:"pa1", chico:true, cols:[{h:""},CT,CM,CTOT],
+            filas:["Maestro de lectura y escritura","Maestro de aula de medios","Secretarias de apoyo","Intendente","Vigilante","Prefecto",
+                   "Trabajador social","Médico escolar","Contralor administrativo","Asistente de almacén",
+                   "Coordinadores de actividades tecnológicas","Coordinadores de actividades académicas","Técnicos en mantenimiento",
+                   "Bibliotecario","Ayudantes de laboratorio","Veterinario","Velador","Psicólogo","Capitán de barco","Otros*","Total"] })
+      +   '<div style="font-size:8.2pt;margin:0 0 .12in">*Especifique:</div>'
+      + '</div>'
+      + '<div style="flex:1">'
+      +   '<div class="preg tight" style="margin-bottom:.10in">4. Escriba la cantidad de horas impartidas a la semana por el personal docente especial.</div>'
+      +   pintarTabla({ id:"hd1", chico:true, cols:[{h:""},{h:"Horas"}],
+            filas:["Profesores de educación física.","Profesores de música, danza, etcétera (actividades artísticas).",
+                   "Profesores de actividades tecnológicas.","Profesores de idiomas."] })
+      +   '<div class="preg tight" style="margin-bottom:.10in">5. Sume el personal directivo con grupo, personal docente y personal docente especial, y anótelo según el tiempo que dedica a la función académica.<br><span style="font-size:8.2pt"><b>Nota:</b> Si en la institución no se utiliza el término tres cuartos de tiempo, no lo considere.</span></div>'
+      +   pintarTabla({ id:"tp1", chico:true, cols:[{h:""},{h:""}],
+            filas:["Tiempo completo","Tres cuartos de tiempo","Medio tiempo","Por horas",
+                   "Total (debe coincidir con la suma reportada en la pregunta 1 de esta sección)."] })
+      +   '<div class="preg tight" style="margin:.10in 0 .06in">3. Escriba el número de docentes con discapacidad desglosándolo por sexo.</div>'
+      +   pintarTablaS({ id:"dc1", cols:[CT,CM,CTOT] })
+      + '</div></div>' },
+    { t:"html", html:'<div class="h2 chico" style="margin-top:.16in">V. AULAS</div>' },
+    { t:"preg tight", txt:'1. Escriba la cantidad de aulas por grado, según su tipo.<br><span style="font-size:8.2pt"><b>Notas:</b> a) El reporte de aulas debe ser por turno.  b) Si un aula se utiliza para impartir clases a más de un grado, anótela en el rubro correspondiente.</span>' },
+    { t:"tabla", id:"au1", chico:true, cols:[{h:"Aulas"},{h:"Primero"},{h:"Segundo"},{h:"Tercero"},{h:"Más de<br>un grado"},{h:"Total"}],
+      filas:["Existentes","En uso","Adaptadas"] },
+    { t:"html", html:'<div style="font-size:8.2pt;margin:-.10in 0 0">De las aulas reportadas en uso, indique la cantidad de las adaptadas.</div>' },
+  ] },
+  { nombre:"VI. Idiomas / VII. Libros", tipo:"interior", linea1:"Información de inicio del ciclo escolar 2024-2025", pag:"14", bloques:[
+    { t:"html", html:'<div class="dosCol">'
+      + '<div style="flex:1">'
+      +   '<div class="h2" style="margin-top:0;font-size:12.5pt">VI. IDIOMAS</div>'
+      +   '<div class="preg tight" style="margin-bottom:.18in">1. Indique qué idiomas se imparten en la escuela. Puede marcar más de una opción.</div>'
+      +   ["Inglés","Francés","Alemán","Japonés","Italiano","Otro*"].map(function (x, i) {
+            return '<div class="opc"><input type="checkbox" class="chk" data-campo="idioma_' + i + '">' + x + "</div>";
+          }).join("")
+      +   '<div style="font-size:8.6pt;margin-top:.08in;display:flex;align-items:flex-end;gap:6px">*Especifique:'
+      +   '<input data-campo="idioma_otro" style="flex:1;border:none;border-bottom:1px solid var(--tinta);font-family:inherit;font-size:9.5pt;background:transparent"></div>'
+      + '</div>'
+      + '<div style="flex:1">'
+      +   '<div class="h2" style="margin-top:0;font-size:12.5pt">VII. LIBROS DE TEXTO</div>'
+      +   '<div class="preg tight" style="margin-bottom:.16in">1. Al inicio del ciclo escolar 2024-2025, ¿La escuela ya contaba con los libros de texto completos?</div>'
+      +   '<div class="opc2"><input type="checkbox" class="chk" data-campo="lt_si">Sí<span class="sep"></span><input type="checkbox" class="chk" data-campo="lt_no">No</div>'
+      +   '<div class="preg tight" style="margin:.22in 0 .16in">Si la respuesta anterior fue "no", responda la siguiente pregunta:</div>'
+      +   '<div class="preg tight" style="margin-bottom:.14in">2. Seleccione la semana del ciclo escolar en la que contaron con todos los libros de texto.</div>'
+      +   '<div class="opc2"><input type="checkbox" class="chk" data-campo="lt_p1">Primera semana<span class="sep"></span><input type="checkbox" class="chk" data-campo="lt_p3">Tercera semana</div>'
+      +   '<div class="opc2"><input type="checkbox" class="chk" data-campo="lt_p2">Segunda semana<span class="sep"></span><input type="checkbox" class="chk" data-campo="lt_p4">Cuarta semana o más</div>'
+      + '</div></div>' },
+  ] },
+
+  { nombre:"Oficialización", tipo:"interior", linea1:"Información de inicio del ciclo escolar 2024-2025", pag:"15", bloques:[
+    { t:"html", html:'<div style="font-size:10pt"><b>IMPORTANTE:</b> Firme y selle esta hoja de oficialización.</div>'
+      + '<div class="preg" style="margin:.20in 0 .10in">Observaciones (registrar solo las relacionadas con el llenado del cuestionario, la plataforma de captura o la integración de la estadística educativa):</div>'
+      + '<textarea class="obs-box" data-campo="observaciones"></textarea>'
+      + '<div class="firmas">'
+      +   '<div class="sello">Sello del Centro de Trabajo</div>'
+      +   '<div class="firma" style="padding-top:.85in"><div class="l"></div>Nombre y firma del responsable del llenado</div>'
+      + '</div>'
+      + '<div class="firmas" style="margin-top:.60in">'
+      +   '<div class="firma"><div class="l"></div>Nombre y firma del supervisor</div>'
+      +   '<div class="firma"><div class="l"></div>Fecha de llenado &nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;/</div>'
+      + '</div>' },
+  ] },
+];
+
+// Pantallas aun no construidas (se completan en las siguientes fases).
+const PENDIENTES = [
+];
+PENDIENTES.forEach((n) => DEFS.push({ nombre:n, tipo:"pendiente" }));
+
+// ══════════ Render ══════════
+function pintarHdr(def){
+  if (def.tipo === "portada"){
+    $("hdr").innerHTML = '<div class="hdrP">'
+      + '<img src="assets/911-logo.png" alt="SEP">'
+      + '<div class="c1">Estadística de Educación</div>'
+      + '<div class="c2">Secundaria</div>'
+      + '<div class="c3">Ciclo escolar, <input id="ciclo-hoja" type="text"></div>'
+      + '<div class="c4">911.5</div></div>'
+      + '<div class="banda"><div class="izq">Sistema escolarizado</div><div class="cen">DATOS DE IDENTIFICACIÓN</div></div>'
+      + '<div class="pieP"><div><b>IMPORTANTE:</b> La información estadística es una herramienta fundamental para la planeación y la toma acertada de decisiones. Los cuestionarios 911 son los medios para recopilar la información de inicio de cursos.</div><div>El cuestionario impreso sirve de apoyo para contestar el cuestionario vía internet.</div></div>';
+    $("ciclo-hoja").value = $("ciclo-txt").value || ciclo;
+  } else {
+    $("hdr").innerHTML = '<div class="hdrI">'
+      + '<div class="a">EDUCACIÓN SECUNDARIA</div>'
+      + '<div class="b">CICLO ESCOLAR, <span id="ciclo-hdr2"></span></div>'
+      + '<div class="c">' + esc(def.linea1 || "") + '</div>'
+      + '<div class="d">911.5</div></div>';
+    const el = $("ciclo-hdr2");
+    if (el) el.textContent = $("ciclo-txt").value || ciclo;
+  }
+  $("pag-num").textContent = def.pag ? ("PÁGINA   " + def.pag + " | 15") : "PÁGINA   1 | 15";
+}
+
+function pintarFilas(filas){
+  let h = "";
+  filas.forEach((fila) => {
+    h += '<div class="fila" style="top:' + fila.y + 'in">';
+    fila.f.forEach((c) => {
+      if (c.sep) h += '<div style="width:' + c.sep + '"></div>';
+      if (c.t) h += '<span class="et">' + esc(c.t) + "</span>";
+      if (c.n){
+        h += '<span class="cajas" data-campo="' + c.campo + '">';
+        for (let i = 0; i < c.n; i++) h += '<input maxlength="1" inputmode="numeric" autocomplete="off">';
+        h += "</span>";
+      } else if (c.ln){
+        h += '<span style="' + (c.ancho ? "width:" + c.ancho + ";" : "flex:1;") + 'display:flex;flex-direction:column">'
+          + '<input class="ln" data-campo="' + c.campo + '" style="width:100%">'
+          + (c.sub ? '<span class="sub">' + esc(c.sub) + "</span>" : "") + "</span>";
+      }
+    });
+    h += "</div>";
+  });
+  return h;
+}
+
+function pintarTabla(b){
+  let h = '<table class="tbl' + (b.chico ? " chico" : "") + '"><thead><tr>';
+  b.cols.forEach((c) => { h += '<th style="width:' + (c.w || ".62in") + '">' + c.h + "</th>"; });
+  h += "</tr></thead><tbody>";
+  b.filas.forEach((f, r) => {
+    h += "<tr>";
+    h += '<td class="' + (f === "Total" ? "gr" : "grn") + '">' + esc(f) + "</td>";
+    for (let c = 1; c < b.cols.length; c++) h += '<td><input data-campo="' + b.id + "_" + r + "_" + c + '" maxlength="6" inputmode="numeric" autocomplete="off"></td>';
+    h += "</tr>";
+  });
+  return h + "</tbody></table>";
+}
+
+function pintarTabla2(b){
+  let h = '<table class="tbl' + (b.chico ? " chico" : "") + '"><thead><tr><th rowspan="2">' + b.cols[0].h + "</th>";
+  b.cols.slice(1).forEach((c) => { h += '<th colspan="' + c.span + '">' + c.h + "</th>"; });
+  h += "</tr><tr>";
+  b.sub.forEach((s) => { h += "<th>" + s + "</th>"; });
+  h += "</tr></thead><tbody>";
+  b.filas.forEach((f, r) => {
+    h += "<tr>";
+    if (typeof f === "string") {
+      // Fila con una sola etiqueta (ej. "Ceguera", "Baja visión").
+      h += '<td class="grn lbl"' + (b.etq ? "" : "") + '>' + esc(f) + "</td>";
+    } else {
+      // SIEMPRE se emite la celda de grado (aunque vaya vacia) para que
+      // "Nvo. Ingreso"/"Repetidor" no se recorran a la izquierda.
+      h += '<td class="' + (f.gr === "Total" ? "gr" : "grn") + '">' + esc(f.gr || "") + "</td>";
+      h += '<td class="gr2">' + esc(f.et || "") + "</td>";
+    }
+    for (let c = 0; c < b.sub.length; c++) h += '<td><input data-campo="' + b.id + "_" + r + "_" + c + '" maxlength="6" inputmode="numeric" autocomplete="off"></td>';
+    h += "</tr>";
+  });
+  return h + "</tbody></table>";
+}
+
+// Tabla agrupada: grado (rowspan), sexo (rowspan), etiqueta y N columnas de
+// captura. Soporta celdas sombreadas ("no utilice las áreas sombreadas") y
+// una columna final de Grupos que solo se habilita donde f.grupo = true.
+function pintarTablaG(b){
+  let h = '<table class="tbl"><thead><tr>';
+  b.cols.forEach((c) => { h += '<th class="tg"' + (c.w ? ' style="width:' + c.w + '"' : "") + ">" + (c.h || "") + "</th>"; });
+  h += "</tr></thead><tbody>";
+  b.filas.forEach((f, r) => {
+    h += "<tr>";
+    if (f.g) h += '<td class="grn" rowspan="' + (f.rs || 1) + '">' + esc(f.g) + "</td>";
+    if (f.s) h += '<td class="grn" rowspan="' + (f.rs2 || 1) + '">' + esc(f.s) + "</td>";
+    h += '<td class="' + (f.bold ? "gr" : "grn") + '">' + esc(f.e || "") + "</td>";
+    for (let c = 0; c < b.n; c++) {
+      if (f.shade && f.shade.indexOf(c) >= 0) h += '<td><div class="sh"></div></td>';
+      else h += '<td><input data-campo="' + b.id + "_" + r + "_" + c + '" maxlength="6" inputmode="numeric" autocomplete="off"></td>';
+    }
+    if (b.grupos) h += f.grupo ? '<td><input data-campo="' + b.id + "_g" + r + '" maxlength="4" inputmode="numeric" autocomplete="off"></td>' : "<td></td>";
+    h += "</tr>";
+  });
+  return h + "</tbody></table>";
+}
+
+// Tabla simple de una sola fila de captura (preguntas 2, 5, 7... del formato):
+// encabezados y debajo una fila de cajas, sin columna de etiqueta.
+function pintarTablaS(b){
+  let h = '<table class="tbl chico"><thead><tr>';
+  b.cols.forEach((c) => { h += "<th>" + c.h + "</th>"; });
+  h += "</tr></thead><tbody><tr>";
+  b.cols.forEach((c, i) => { h += '<td><input data-campo="' + b.id + "_" + i + '" maxlength="6" inputmode="numeric" autocomplete="off"></td>'; });
+  return h + "</tr></tbody></table>";
+}
+
+function irA(i){
+  volcarDomAMemoria();
+  pantalla = i;
+  const def = DEFS[i];
+  pintarPasos();
+  $("hdr").innerHTML = ""; $("cuerpo").innerHTML = ""; $("flujo").innerHTML = "";
+  // Una hoja convertida pudo dejar otro tamaño; las pantallas normales son 11×8.5.
+  $("hoja").style.width = "11in"; $("hoja").style.height = "8.5in";
+  if (def.tipo === "portada"){
+    pintarHdr(def);
+    $("cuerpo").innerHTML = pintarFilas(PANTALLA_1);
+    $("cuerpo").querySelectorAll(".cajas").forEach((grupo) => {
+      const inputs = grupo.querySelectorAll("input");
+      inputs.forEach((inp, k) => {
+        inp.addEventListener("input", () => { if (inp.value && k < inputs.length - 1) inputs[k + 1].focus(); });
+        inp.addEventListener("keydown", (e) => { if (e.key === "Backspace" && !inp.value && k > 0) inputs[k - 1].focus(); });
+      });
+    });
+  } else if (def.tipo === "pdf") {
+    // Hoja convertida desde el PDF oficial: trae su propio encabezado dibujado,
+    // así que no se pinta el encabezado HTML ni el número de página.
+    // El dibujo lo hace Motor911.hojaHTML: bandas de color, trazos y logotipo en
+    // SVG, rótulos con su color real y las casillas como campos llenables.
+    // Es EL MISMO renderizador que usa 911-importar.html, para que lo que se
+    // prueba al importar sea exactamente lo que se ve al llenar.
+    const p = def.pagina || { ancho: 11, alto: 8.5, cajas: [], textos: [], bandas: [] };
+    $("pag-num").textContent = "";
+    if (window.Motor911) {
+      $("cuerpo").innerHTML = Motor911.hojaHTML(p);
+    } else {
+      $("cuerpo").innerHTML = '<div style="position:absolute;left:.5in;top:.5in">' +
+        'No se pudo cargar 911-motor.js: vuelve a cargar la página.</div>';
+    }
+    $("hoja").style.width = (p.ancho || 11) + "in";
+    $("hoja").style.height = (p.alto || 8.5) + "in";
+    // Grupos de cajitas (Clave del Centro de Trabajo, código postal, teléfono,
+    // CURP…): al escribir salta a la siguiente y con Retroceso regresa a la
+    // anterior, como se captura en el impreso.
+    const porGrupo = {};
+    $("cuerpo").querySelectorAll("input[data-grupo]").forEach((inp) => {
+      const g = inp.dataset.grupo;
+      (porGrupo[g] = porGrupo[g] || []).push(inp);
+    });
+    Object.keys(porGrupo).forEach((g) => {
+      const campos = porGrupo[g].sort((a, b) => (parseFloat(a.style.left) || 0) - (parseFloat(b.style.left) || 0));
+      campos.forEach((inp, k) => {
+        inp.addEventListener("input", () => {
+          if (inp.value.length > 1) inp.value = inp.value.slice(-1);
+          if (inp.value && k < campos.length - 1) campos[k + 1].focus();
+        });
+        inp.addEventListener("keydown", (e) => {
+          if (e.key === "Backspace" && !inp.value && k > 0) { campos[k - 1].focus(); campos[k - 1].select(); }
+          else if (e.key === "ArrowRight" && k < campos.length - 1) campos[k + 1].focus();
+          else if (e.key === "ArrowLeft" && k > 0) campos[k - 1].focus();
+        });
+      });
+    });
+  } else if (def.tipo === "interior"){
+    pintarHdr(def);
+    let h = "";
+    def.bloques.forEach((b) => {
+      if (b.t === "nota") h += '<div class="nota">' + esc(b.txt) + "</div>";
+      else if (b.t === "h2") h += '<div class="h2">' + esc(b.txt) + "</div>";
+      else if (b.t === "preg") h += '<div class="preg">' + b.txt + "</div>";
+      else if (b.t === "preg tight") h += '<div class="preg tight">' + b.txt + "</div>";
+      else if (b.t === "obs") h += '<div class="obs">' + b.txt + "</div>";
+      else if (b.t === "tabTit") h += '<div class="tabTit">' + b.txt + "</div>";
+      else if (b.t === "tabla") h += pintarTabla(b);
+      else if (b.t === "tabla2") h += pintarTabla2(b);
+      else if (b.t === "tablaG") h += pintarTablaG(b);
+      else if (b.t === "tablaS") h += pintarTablaS(b);
+      else if (b.t === "html") h += b.html;
+      else if (b.t === "fila2") h += '<div class="f2"><div class="izq">' + b.izq + '</div><div class="der">' + b.der + "</div></div>";
+    });
+    $("flujo").innerHTML = h;
+  } else {
+    pintarHdr({ tipo:"interior", linea1:"(en construcción)", pag:String(i + 1) });
+    $("flujo").innerHTML = '<div style="text-align:center;font-size:12pt;color:#78716c;margin-top:2.2in">'
+      + "Pantalla " + (i + 1) + " — <b>" + esc(def.nombre) + "</b><br><br>En construcción (siguiente fase).</div>";
+  }
+  aplicarADom(memoria);
+  ajustar();
+}
+
+function pintarPasos(){
+  // Con un formato importado hay muchas pantallas (39 en el 911.5 + anexos), así
+  // que el nombre va corto ("911.5·7"), cada documento se anuncia una vez y la
+  // fila tiene tope de alto con desplazamiento.
+  let h = "";
+  DEFS.forEach((d, i) => {
+    if (d.etiquetaDoc && d.hoja === 1) h += '<span class="doc">' + esc(d.etiquetaDoc) + "</span>";
+    h += '<span class="p' + (i === pantalla ? " activo" : "") + '" data-i="' + i + '"' +
+         (d.nombreLargo ? ' title="' + esc(d.nombreLargo) + '"' : "") + ">" + (i + 1) + ". " + esc(d.nombre) + "</span>";
+  });
+  $("pasos").innerHTML = h;
+  $("pasos").querySelectorAll(".p").forEach((el) => el.addEventListener("click", () => irA(parseInt(el.dataset.i, 10))));
+}
+
+// ══════════ Login / acceso ══════════
+function errorLogin(m){ const e = $("login-error"); e.textContent = m; e.style.display = "block"; }
+
+async function entrar(){
+  const email = $("login-email").value.trim();
+  const pass = $("login-pass").value;
+  if (!email || !pass) return;
+  const b = $("login-btn"); b.disabled = true; b.textContent = "Entrando...";
+  $("login-error").style.display = "none";
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch (e) { errorLogin("Correo o contraseña incorrectos."); }
+  b.disabled = false; b.textContent = "Entrar";
+}
+$("login-btn").addEventListener("click", entrar);
+$("login-pass").addEventListener("keydown", (e) => { if (e.key === "Enter") entrar(); });
+$("btn-logout").addEventListener("click", () => signOut(auth));
+
+// Alta de Direccion SIN pasar por el sistema principal: se firma con el
+// correo y la contraseña de siempre y se registra el correo en la lista con
+// rol "direccion". Solo funciona mientras NO haya otra cuenta de Direccion
+// registrada (bootstrap): una vez que existe una, queda cerrado.
+async function altaDireccion(){
+  const email = $("login-email").value.trim().toLowerCase();
+  const pass = $("login-pass").value;
+  const b = $("btn-alta-dir");
+  $("login-error").style.display = "none";
+  if (!email || !pass) { errorLogin("Escribe tu correo y tu contraseña de siempre, y vuelve a darle al botón."); return; }
+  b.disabled = true; b.textContent = "Activando tu cuenta...";
+  altaDirEnCurso = true;
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+    await signInWithEmailAndPassword(auth, email, pass);
+    const snap = await getDoc(doc(db, "config", "acceso_911"));
+    const lista = snap.exists() && Array.isArray(snap.data().usuarios) ? snap.data().usuarios.slice() : [];
+    const otroDir = lista.find((x) => (x.rol || "secretaria") === "direccion" && x.activo !== false && String(x.email).toLowerCase() !== email);
+    if (otroDir) {
+      altaDirEnCurso = false;
+      errorLogin("Ya hay una cuenta de Dirección registrada (" + otroDir.email + "). Pídele que te agregue como Dirección.");
+      b.disabled = false; b.textContent = "Soy Dirección: activar mi cuenta";
+      return;
+    }
+    const ya = lista.find((x) => String(x.email).toLowerCase() === email);
+    if (ya) { ya.rol = "direccion"; ya.activo = true; ya.nombre = ya.nombre || "Dirección"; }
+    else lista.push({ email: email, nombre: "Dirección", rol: "direccion", activo: true });
+    const norm = (x) => String(x.email || "").toLowerCase();
+    const emails = lista.filter((x) => x.activo !== false).map(norm);
+    const secretarias = lista.filter((x) => (x.rol || "secretaria") === "secretaria").map(norm);
+    const secretariasActivas = lista.filter((x) => (x.rol || "secretaria") === "secretaria" && x.activo !== false).map(norm);
+    await setDoc(doc(db, "config", "acceso_911"),
+      { usuarios: lista, emails: emails, secretarias: secretarias, secretariasActivas: secretariasActivas },
+      { merge: true });
+    b.textContent = "✅ Listo, entrando...";
+    location.reload();
+    return;
+  } catch (e) {
+    altaDirEnCurso = false;
+    const m = (e && e.code) ? e.code : "";
+    if (m === "auth/invalid-credential" || m === "auth/wrong-password" || m === "auth/user-not-found") {
+      errorLogin("Tu correo o tu contraseña no son correctos. Usa la misma contraseña con la que entras al sistema.");
+    } else {
+      errorLogin("No se pudo activar tu cuenta (" + (e && e.message ? e.message : e) + ").\n\nSi es por permisos de Firebase, agrega tu correo a mano en Firestore → config → acceso_911: campo usuarios (con rol \"direccion\") y campo emails.");
+    }
+    b.disabled = false; b.textContent = "Soy Dirección: activar mi cuenta";
+  }
+}
+$("btn-alta-dir").addEventListener("click", altaDireccion);
+
+// La lista config/acceso_911 dice quien puede ENTRAR (las 3 secretarias y
+// Direccion). Si el correo con sesion no esta en la lista, se cierra.
+async function datosDeAcceso(user){
+  const email = (user.email || "").toLowerCase();
+  const snap = await getDoc(doc(db, "config", "acceso_911"));
+  const lista = snap.exists() && Array.isArray(snap.data().usuarios) ? snap.data().usuarios : [];
+  const u = lista.find((x) => String(x.email || "").toLowerCase() === email && x.activo !== false);
+  // Si ya hay una cuenta de Direccion, el auto-alta queda cerrado y su boton
+  // ni siquiera se muestra: nadie mas puede "nombrarse" Direccion.
+  hayDireccion = lista.some((x) => (x.rol || "secretaria") === "direccion" && x.activo !== false);
+  if (!u) return null;
+  return { email: email, nombre: u.nombre || email, rol: u.rol || "secretaria" };
+}
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    $("app-screen").style.display = "none";
+    $("login-screen").style.display = "flex";
+    return;
+  }
+  let acc = null;
+  let errLista = "";
+  try { acc = await datosDeAcceso(user); } catch (e) { errLista = (e && e.message) ? e.message : String(e); }
+  // Mientras Direccion se esta dando de alta (boton "activar mi cuenta"),
+  // la sesion todavia no aparece en la lista: no la cierres, deja que el
+  // alta termine y recargue.
+  if (!acc && altaDirEnCurso) return;
+  if (!acc) {
+    await signOut(auth);
+    $("app-screen").style.display = "none";
+    $("login-screen").style.display = "flex";
+    if (errLista) {
+      const esPermiso = /permission|insufficient|denied/i.test(errLista);
+      errorLogin(esPermiso
+        ? "Firebase no permitió leer la lista de acceso (config/acceso_911).\n\nEsto NO se arregla escribiendo tu correo: hay que poner las reglas de Firestore (te dejé el texto listo).\n\nDetalle técnico: " + errLista
+        : "Hubo un error técnico al revisar tu acceso:\n" + errLista + "\n\nEsto es un fallo de la página, no de tu cuenta: mándale esta captura a quien te da soporte.");
+    } else if (hayDireccion) {
+      errorLogin("Tu correo no está dado de alta en la Plantilla 911.5, o tu contraseña no es la correcta.\n\nCada secretaria entra con el usuario y la contraseña que le dio Dirección. Pídeselos: nadie puede darse de alta por su cuenta.");
+    } else {
+      // Solo en el arranque inicial (todavia NO existe ninguna cuenta de
+      // Direccion) se ofrece el auto-alta, y solo a quien ya tiene sesión.
+      $("btn-alta-dir").style.display = "block";
+      errorLogin("Todavía no hay ninguna cuenta de Dirección dada de alta.\n\nSi tú eres Dirección, escribe tu correo y tu contraseña de siempre y dale al botón de abajo. En cuanto exista una cuenta de Dirección, este botón desaparece y nadie más puede usarlo.");
+    }
+    return;
+  }
+  usuario = acc;
+  $("login-screen").style.display = "none";
+  $("app-screen").style.display = "block";
+  iniciar();
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+//  ⬆ SUBIR FORMATO  (solo Dirección)
+//  Convierte el PDF oficial del ciclo con el motor compartido (911-motor.js) y
+//  lo guarda en Firestore POR CICLO ESCOLAR, para que la Plantilla quede
+//  llenable sin que nadie diseñe nada a mano.
+//  Se guarda en dos partes:
+//    formatos911/<ciclo>              → qué documentos y en qué orden
+//    formatos911/<ciclo>/hojas/<clave> → una hoja por documento
+//  (una hoja por documento porque la más pesada pesa ~106 KB y el límite de
+//   Firestore es 1 MB por documento).
+// ══════════════════════════════════════════════════════════════════════════
+// El logotipo que se pinta en el encabezado de las hojas convertidas: el ARCHIVO
+// de la primera versión de la 911 (el que el usuario quiere ver). Se respeta el
+// alto del logotipo del PDF y se calcula el ancho con su proporción (580x132).
+// Donde el recuadro no tenga ese tamaño se recorta el logotipo del propio PDF.
+const LOGO_PRIMERA_VERSION = {
+  url: "assets/911-logo-transparente.png",
+  aspecto: 580 / 132,
+  anchoMin: 1.6, anchoMax: 3.4, altoMin: 0.35, altoMax: 0.8
+};
+
+let formatoImportado = false;   // ¿las pantallas vienen de un PDF importado?
+let pdfjsPromesa = null;
+
+// pdf.js se carga SOLO al subir un formato (pesa ~1 MB y no hace falta antes).
+function cargarPdfJs(){
+  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  if (pdfjsPromesa) return pdfjsPromesa;
+  const CDN = "assets/vendor/";
+  pdfjsPromesa = new Promise((ok, mal) => {
+    const sc = document.createElement("script");
+    sc.src = CDN + "pdf.min.js";
+    sc.onload = () => {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = CDN + "pdf.worker.min.js";
+      ok(window.pdfjsLib);
+    };
+    sc.onerror = () => { pdfjsPromesa = null; mal(new Error("No se pudo cargar pdf.js (revisa la conexión a internet).")); };
+    document.head.appendChild(sc);
+  });
+  return pdfjsPromesa;
+}
+
+// Lee el formato guardado de un ciclo. Devuelve null si ese ciclo no tiene.
+async function leerFormatoDelCiclo(paraCiclo){
+  if (!window.Motor911) throw new Error("No se cargó 911-motor.js");
+  const snap = await getDoc(doc(db, "formatos911", paraCiclo));
+  if (!snap.exists()) return null;
+  const meta = snap.data();
+  if (!meta || !meta.documentos || !meta.documentos.length) return null;
+  const hojas = await getDocs(collection(db, "formatos911", paraCiclo, "hojas"));
+  const porClave = {};
+  hojas.forEach((d) => { porClave[d.id] = d.data(); });
+  const pantallas = Motor911.pantallasDesdeFormato(meta, porClave);
+  return pantallas.length ? { meta: meta, pantallas: pantallas } : null;
+}
+
+// Si Firestore no contesta, hay que decirlo: antes se quedaba en "Guardando…"
+// para siempre y no había forma de saber qué pasó.
+function conTiempo(promesa, ms, texto){
+  return new Promise((ok, mal) => {
+    const reloj = setTimeout(() => {
+      mal(new Error(texto + " (más de " + Math.round(ms / 1000) + " s sin respuesta). Revisa tu conexión a internet y vuelve a intentarlo; lo último que se veía en el aviso no alcanzó a guardarse."));
+    }, ms);
+    promesa.then((v) => { clearTimeout(reloj); ok(v); }, (e) => { clearTimeout(reloj); mal(e); });
+  });
+}
+
+/* Se guarda UNA HOJA POR UNA, avisando en cuál va. Es más lento que un lote,
+   pero cada paso es chico y acotado: si Firestore no contesta, el aviso dice
+   exactamente en qué hoja se atoró (antes se quedaba en "Guardando…" para
+   siempre). El índice del ciclo se escribe AL FINAL, así que mientras no
+   termine, la Plantilla sigue mostrando el formato anterior completo. */
+
+async function guardarFormatoDelCiclo(paraCiclo, documentos, porClave, por, modo, avisar){
+  // EL ORDEN IMPORTA: primero se escriben las hojas nuevas, luego se borra lo que
+  // sobra y AL FINAL el índice del ciclo. Así, si algo falla a medias, el índice
+  // sigue apuntando al formato anterior (no se queda un ciclo a medias) y basta
+  // con volver a intentarlo.
+  const claves = Object.keys(porClave);
+  // 1) Las hojas nuevas.
+  for (let i = 0; i < claves.length; i++){
+    if (avisar) avisar("Guardando hoja " + (i + 1) + " de " + claves.length + "…");
+    await conTiempo(setDoc(doc(db, "formatos911", paraCiclo, "hojas", claves[i]), porClave[claves[i]]),
+      90000, "Firestore no respondió al guardar la hoja " + (i + 1) + " de " + claves.length);
+  }
+  // 2) El ÍNDICE del ciclo: hasta aquí se "compromete" el cambio. Si algo falla
+  //    antes, la Plantilla sigue mostrando el formato anterior completo.
+  if (avisar) avisar("Guardando el índice del ciclo…");
+  await conTiempo(setDoc(doc(db, "formatos911", paraCiclo), {
+    ciclo: paraCiclo, generado: new Date().toISOString(), por: por || "", documentos: documentos
+  }), 90000, "Firestore no respondió al guardar el índice del ciclo");
+  // 3) Y AL FINAL se borra lo que ya no se usa. Si esto falla, no pasa nada: son
+  //    hojas que nadie lee porque no están en el índice.
+  if (modo !== "agregar"){
+    if (avisar) avisar("Revisando lo que ya no se usa…");
+    const previas = await conTiempo(getDocs(collection(db, "formatos911", paraCiclo, "hojas")), 90000,
+      "Firestore no respondió al leer lo guardado");
+    const sobrantes = [];
+    previas.forEach((d) => { if (!porClave[d.id]) sobrantes.push(d.ref); });
+    for (let i = 0; i < sobrantes.length; i++){
+      if (avisar) avisar("Quitando lo que ya no se usa… " + (i + 1) + " de " + sobrantes.length);
+      await conTiempo(deleteDoc(sobrantes[i]), 90000, "Firestore no respondió al borrar lo que sobra");
+    }
+  }
+}
+
+// Cambia las pantallas de la Plantilla por las del formato importado.
+function aplicarFormato(f, sinRedibujar){
+  if (!f || !f.pantallas || !f.pantallas.length) return false;
+  DEFS.length = 0;
+  f.pantallas.forEach((p) => DEFS.push(p));
+  formatoImportado = true;
+  window.__formatoImportadoMeta = f.meta || null;
+  if (!sinRedibujar){ pantalla = 0; irA(0); }
+  return true;
+}
+
+// ── El diálogo para elegir los PDF, ordenarlos y ponerles nombre ──
+// Sirve para las dos cosas: subir el formato completo del ciclo (principal +
+// anexos de una vez) o AGREGAR anexos que llegaron después, sin tocar lo que ya
+// estaba. Si el ciclo todavía no tiene formato, sólo se puede reemplazar.
+async function dialogoSubirFormato(){
+  if (!usuario || usuario.rol !== "direccion") return;
+  const previo = document.getElementById("dlg-formato");
+  if (previo) previo.remove();
+
+  const ov = document.createElement("div");
+  ov.id = "dlg-formato";
+  ov.className = "no-print";
+  ov.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;display:flex;align-items:flex-start;justify-content:center;padding:18px 12px;overflow-y:auto";
+  ov.innerHTML = '<div style="background:#fff;border-radius:14px;padding:18px 20px;width:100%;max-width:780px;font-size:13px;color:#292524;box-shadow:0 20px 60px rgba(0,0,0,.35)">' +
+    '<h3 style="margin:0 0 8px;color:#0d4f4a;font-size:17px">⬆ Formato del ciclo ' + esc(ciclo) + '</h3>' +
+    '<div id="dlg-cargando" style="color:#57534e">Revisando lo que ya está guardado…</div>' +
+    '<div id="dlg-cuerpo" style="display:none"></div>' +
+    '</div>';
+  document.body.appendChild(ov);
+
+  // ¿Ya hay formato de este ciclo? (decide el modo por omisión)
+  let metaPrevia = null;
+  try {
+    const snap = await getDoc(doc(db, "formatos911", ciclo));
+    if (snap.exists()) metaPrevia = snap.data();
+  } catch (e) { /* si no se puede leer, se trata como si no hubiera */ }
+  const yaTiene = !!(metaPrevia && metaPrevia.documentos && metaPrevia.documentos.length);
+
+  const cuerpo = ov.querySelector("#dlg-cuerpo");
+  ov.querySelector("#dlg-cargando").style.display = "none";
+  cuerpo.style.display = "block";
+
+  const docsPrevios = yaTiene ? metaPrevia.documentos.slice().sort((a, b) => a.orden - b.orden) : [];
+  let modo = yaTiene ? "agregar" : "reemplazar";   // por omisión: sumar anexos
+  const archivos = [];   // {archivo, etiqueta}
+
+  cuerpo.innerHTML =
+    (yaTiene
+      ? '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:9px;padding:8px 10px;margin-bottom:10px">' +
+        'Este ciclo ya tiene <b>' + docsPrevios.length + ' documento(s)</b>: ' +
+        esc(docsPrevios.map((d) => d.etiqueta + " (" + d.hojas + " hojas)").join(", ")) + '.</div>'
+      : '<div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:9px;padding:8px 10px;margin-bottom:10px">' +
+        'Este ciclo todavía no tiene formato importado. Sube el principal (el 911.5) y, si quieres, los anexos en la misma tanda.</div>') +
+    '<div style="margin:8px 0 12px;padding:8px 10px;border:1px solid #e7e5e4;border-radius:9px">' +
+      '<div style="font-weight:700;margin-bottom:4px">¿Qué quieres hacer?</div>' +
+      '<label style="display:block;margin:4px 0"><input type="radio" name="dlg-modo" value="agregar" ' + (modo === "agregar" ? "checked" : "") + (yaTiene ? "" : " disabled") + '> ' +
+        '<b>Agregar anexos</b> a lo que ya está (no toca el principal ni lo ya subido)' + (yaTiene ? "" : " — no disponible: aún no hay formato") + '</label>' +
+      '<label style="display:block;margin:4px 0"><input type="radio" name="dlg-modo" value="reemplazar" ' + (modo === "reemplazar" ? "checked" : "") + '> ' +
+        '<b>Reemplazar</b> todo el formato del ciclo con los archivos que elija' + (yaTiene ? " (se borra lo anterior)" : "") + '</label>' +
+    '</div>' +
+    '<p style="margin:0 0 6px">Elige los PDF <b>en el orden en que deben aparecer</b> (el primero es el principal cuando reemplazas; los demás quedan como pantallas siguientes).</p>' +
+    '<input id="dlg-arch" type="file" accept="application/pdf" multiple style="display:block;margin:10px 0">' +
+    '<div id="dlg-lista"></div>' +
+    '<div id="dlg-avance" style="margin-top:10px;font-size:12.5px;color:#0d4f4a;min-height:18px"></div>' +
+    '<div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">' +
+      '<button id="dlg-limpiar" title="Borra lo capturado en la Plantilla 911 de este ciclo (el formato NO se toca)" style="padding:8px 12px;border:1px solid #fca5a5;border-radius:8px;background:#fef2f2;color:#991b1b;font-weight:600;cursor:pointer">🧹 Empezar de cero (borra lo capturado)</button>' +
+      '<span>' +
+      '<button id="dlg-cancelar" style="padding:9px 16px;border:1px solid #d6d3d1;border-radius:8px;background:#fff;font-weight:600;cursor:pointer;margin-right:8px">Cancelar</button>' +
+      '<button id="dlg-ok" style="padding:9px 18px;border:none;border-radius:8px;background:#0d4f4a;color:#fff;font-weight:700;cursor:pointer">Convertir y guardar</button>' +
+    '</div>';
+
+  const lista = cuerpo.querySelector("#dlg-lista");
+  const avance = cuerpo.querySelector("#dlg-avance");
+  const botonOk = cuerpo.querySelector("#dlg-ok");
+  const bordeBoton = "border:1px solid #d6d3d1;border-radius:6px;background:#fff;cursor:pointer;padding:2px 7px";
+
+  cuerpo.querySelectorAll("input[name=dlg-modo]").forEach((r) => {
+    r.addEventListener("change", () => { modo = r.value; });
+  });
+
+  function pintarLista(){
+    if (!archivos.length){
+      lista.innerHTML = '<p style="color:#78716c;margin:6px 0">Todavía no eliges archivos.</p>';
+      return;
+    }
+    lista.innerHTML = archivos.map((a, i) =>
+      '<div style="display:flex;gap:8px;align-items:center;border:1px solid #e7e5e4;border-radius:8px;padding:6px 8px;margin:6px 0">' +
+        '<b style="width:1.3em">' + (i + 1) + '.</b>' +
+        '<input data-etq="' + i + '" value="' + esc(a.etiqueta) + '" title="Nombre que verás en la lista de pantallas" style="flex:0 0 130px;padding:4px 6px;border:1px solid #d6d3d1;border-radius:6px">' +
+        '<span style="flex:1;color:#57534e;font-size:11.5px">' + esc(a.archivo.name) + ' · ' + Math.max(1, Math.round(a.archivo.size / 1024)) + ' KB</span>' +
+        '<button data-subir="' + i + '" style="' + bordeBoton + '" ' + (i === 0 ? "disabled" : "") + '>▲</button>' +
+        '<button data-bajar="' + i + '" style="' + bordeBoton + '" ' + (i === archivos.length - 1 ? "disabled" : "") + '>▼</button>' +
+        '<button data-quitar="' + i + '" style="' + bordeBoton + '">✕</button>' +
+      '</div>').join("");
+  }
+  pintarLista();
+
+  cuerpo.querySelector("#dlg-arch").addEventListener("change", (e) => {
+    Array.from(e.target.files || []).forEach((f) => {
+      archivos.push({ archivo: f, etiqueta: f.name.replace(/\.pdf$/i, "") });
+    });
+    // Nombres cortos para los formatos conocidos (si el usuario no los cambió)
+    archivos.forEach((a) => {
+      const n = a.archivo.name.toUpperCase();
+      if (a.etiqueta === a.archivo.name.replace(/\.pdf$/i, "")){
+        if (n.indexOf("911-5") >= 0 || n.indexOf("911.5") >= 0 || n.indexOf("911_5") >= 0) a.etiqueta = "911.5";
+        else if (n.indexOf("911.T") >= 0 || n.indexOf("911T") >= 0 || n.indexOf("TECNOLOG") >= 0) a.etiqueta = "ANEXO 911.T";
+        else if (n.indexOf("911-I") >= 0 || n.indexOf("911I") >= 0 || n.indexOf("INFRAESTRUCTURA") >= 0) a.etiqueta = "ANEXO 911.I";
+        else if (n.indexOf("ODS") >= 0 || n.indexOf("SOSTENIBLE") >= 0) a.etiqueta = "ANEXO ODS";
+      }
+    });
+    e.target.value = "";
+    pintarLista();
+  });
+
+  lista.addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    const mover = (i, j) => { const t = archivos[i]; archivos[i] = archivos[j]; archivos[j] = t; };
+    if (b.dataset.subir != null){ const i = Number(b.dataset.subir); if (i > 0) mover(i, i - 1); }
+    else if (b.dataset.bajar != null){ const i = Number(b.dataset.bajar); if (i < archivos.length - 1) mover(i, i + 1); }
+    else if (b.dataset.quitar != null) archivos.splice(Number(b.dataset.quitar), 1);
+    pintarLista();
+  });
+  lista.addEventListener("input", (e) => {
+    if (e.target.dataset.etq == null) return;
+    archivos[Number(e.target.dataset.etq)].etiqueta = e.target.value;
+  });
+
+  cuerpo.querySelector("#dlg-cancelar").onclick = () => ov.remove();
+
+  // Empezar de cero: borra las RESPUESTAS del ciclo (el formato no se toca).
+  // Sirve cuando el acomodo de las casillas cambió y lo capturado antes ya no
+  // encaja (por ejemplo, al pasar de campos anchos a cajita por cajita).
+  cuerpo.querySelector("#dlg-limpiar").onclick = async () => {
+    if (!confirm("Se va a BORRAR todo lo capturado en la Plantilla 911 del ciclo " + ciclo +
+      " (las respuestas; el formato NO se toca).\n\nNo se puede deshacer. Después puedes volver a llenarlo, por ejemplo con Prellenar.\n\n¿Continuar?")) return;
+    const bl = cuerpo.querySelector("#dlg-limpiar");
+    bl.disabled = true; bl.textContent = "Borrando…";
+    try {
+      await conTiempo(setDoc(refDoc(), { data: "{}", actualizado: new Date().toISOString(), actualizadoPor: usuario.email }),
+        60000, "Firestore no respondió al borrar lo capturado");
+      memoria = {};
+      document.querySelectorAll("[data-campo]").forEach((el) => {
+        if (el.classList.contains("cajas")) el.querySelectorAll("input").forEach((i) => { i.value = ""; });
+        else if (el.type === "checkbox") el.checked = false;
+        else el.value = "";
+      });
+      irA(pantalla);
+      ov.remove();
+      aviso("Se borró lo capturado del ciclo " + ciclo + ". Vuelve a llenarlo (puedes usar Prellenar).", "ok");
+    } catch (e) {
+      bl.disabled = false; bl.textContent = "🧹 Empezar de cero (borra lo capturado)";
+      avance.innerHTML = '<span style="color:#991b1b">No se pudo borrar: ' + esc(e && e.message ? e.message : String(e)) + "</span>";
+    }
+  };
+
+  botonOk.onclick = async () => {
+    if (!archivos.length){ avance.innerHTML = '<span style="color:#991b1b">Elige al menos un PDF.</span>'; return; }
+    // Aviso importante: reemplazar con MENOS documentos de los que ya hay borra
+    // los que no se vuelvan a elegir (por ejemplo, dejar fuera los anexos).
+    if (modo === "reemplazar" && docsPrevios.length){
+      const etiquetasNuevas = archivos.map((a) => String(a.etiqueta || "").trim() || a.archivo.name.replace(/\.pdf$/i, ""));
+      const iguales = etiquetasNuevas.length === docsPrevios.length &&
+        etiquetasNuevas.every((e, i) => e === docsPrevios[i].etiqueta);
+      if (!iguales){
+        const antes = docsPrevios.map((d) => d.etiqueta + " (" + d.hojas + " hojas)").join(", ");
+        const despues = etiquetasNuevas.join(", ");
+        const sobra = docsPrevios.filter((d) => etiquetasNuevas.indexOf(d.etiqueta) < 0);
+        const seguir = confirm("Ahora el ciclo tiene: " + antes + ".\n\nVas a dejarlo con: " + despues + ".\n\n" +
+          (sobra.length
+            ? "Se van a BORRAR del ciclo: " + sobra.map((d) => d.etiqueta + " (" + d.hojas + " hojas)").join(", ") +
+              ". Lo capturado en esas hojas se pierde.\n\nSi sólo querías volver a convertir el principal, cancela y elige TODOS los PDF en orden.\n\n"
+            : "") +
+          "¿Continuar?");
+        if (!seguir) return;
+      }
+    }
+    botonOk.disabled = true;
+    try {
+      const pdfjsLib = await cargarPdfJs();
+      // Al agregar, los documentos nuevos siguen la numeración de los que ya
+      // estaban, para no pisar sus hojas ni sus campos.
+      const base = (modo === "agregar") ? docsPrevios : [];
+      const desde = base.reduce((m, d) => Math.max(m, d.orden || 0), 0);
+      const nuevos = [], porClave = {};
+      for (let d = 0; d < archivos.length; d++){
+        const orden = desde + d + 1;
+        const etiqueta = String(archivos[d].etiqueta || "").trim() || archivos[d].archivo.name.replace(/\.pdf$/i, "");
+        avance.textContent = "Leyendo " + archivos[d].archivo.name + "…";
+        const buf = await archivos[d].archivo.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+        for (let p = 1; p <= pdf.numPages; p++){
+          avance.textContent = "Convirtiendo " + etiqueta + ": hoja " + p + " de " + pdf.numPages + "…";
+          const hoja = await pdf.getPage(p);
+          const pag = await Motor911.analizarPagina(hoja, pdfjsLib, { numeroHoja: p });
+          if (p === 1){
+            // El logotipo del encabezado (escudo + "Educación" + "Secretaría de
+            // Educación Pública") tiene curvas muy finas y huecos dentro de las
+            // letras: reconstruirlo no queda igual. Se pinta una IMAGEN encima:
+            //  1) el archivo de la primera versión (assets/911-logo.png), que es
+            //     el que el usuario quiere ver, cuando el recuadro es del tamaño
+            //     del logotipo;
+            //  2) si no (hay hojas con otros adornos en la franja de arriba), se
+            //     recorta el propio PDF a 300 dpi, que también sale nítido.
+            try {
+              let logo = Motor911.logoDeArchivo(pag, LOGO_PRIMERA_VERSION);
+              if (!logo) logo = await Motor911.recortarLogo(pag, hoja, pdfjsLib, 300);
+              if (logo) { Motor911.recortarLogotipoDeHoja(pag); pag.logo = logo; }
+            } catch (e) {
+              console.warn("No se pudo poner el logotipo; se deja dibujado:", e && e.message);
+            }
+          }
+          porClave[Motor911.claveHoja(orden, p)] = pag;
+        }
+        nuevos.push({ orden: orden, etiqueta: etiqueta, archivo: archivos[d].archivo.name, hojas: pdf.numPages });
+      }
+      const documentos = base.concat(nuevos);
+      const decir = (t) => { avance.textContent = t; };
+      // Al AGREGAR hacen falta las hojas que ya estaban para armar la lista
+      // completa; se leen ANTES de guardar (si esto falla, no se toca nada).
+      let hojasViejas = {};
+      if (modo === "agregar" && docsPrevios.length){
+        decir("Leyendo los documentos que ya estaban…");
+        const previas = await conTiempo(getDocs(collection(db, "formatos911", ciclo, "hojas")), 90000,
+          "Firestore no respondió al leer los documentos que ya estaban");
+        previas.forEach((d) => { hojasViejas[d.id] = d.data(); });
+      }
+      await guardarFormatoDelCiclo(ciclo, documentos, porClave, usuario.email, modo, decir);
+      // Se aplica ENSEGUIDA con lo que ya tenemos en memoria. Antes se volvía a
+      // leer todo de Firestore y esa relectura, en una conexión lenta, se quedaba
+      // esperando y hacía parecer que el guardado había fallado (cuando ya estaba
+      // guardado).
+      decir("Aplicando el formato…");
+      const meta = { ciclo: ciclo, generado: new Date().toISOString(), por: usuario.email, documentos: documentos };
+      const todas = Object.assign({}, hojasViejas, porClave);
+      aplicarFormato({ meta: meta, pantallas: Motor911.pantallasDesdeFormato(meta, todas) });
+      ov.remove();
+      aviso((modo === "agregar" ? "Anexos agregados" : "Formato guardado") + " para el ciclo " + ciclo + ": " +
+        nuevos.map((x) => x.etiqueta + " (" + x.hojas + " hojas)").join(", ") +
+        ". El ciclo quedó con " + DEFS.length + " pantallas, todas llenables.", "ok");
+    } catch (e) {
+      avance.innerHTML = '<span style="color:#991b1b">No se pudo: ' + esc(e && e.message ? e.message : String(e)) +
+        '<br>Si es un problema de permisos, hay que publicar las reglas de Firestore de la colección <b>formatos911</b>.</span>';
+      botonOk.disabled = false;
+    }
+  };
+}
+
+
+async function iniciar(){
+  ciclo = obtenerCicloActivo() || (await cargarCicloActivo()) || "";
+  $("usuario-label").textContent = usuario.nombre + (usuario.rol === "direccion" ? " (Dirección)" : "");
+  if (usuario.rol === "direccion") {
+    const av = document.createElement("div");
+    av.className = "no-print";
+    av.style.cssText = "background:#fef3c7;border:1px solid #fcd34d;color:#92400e;border-radius:10px;padding:8px 12px;font-size:12px;margin:0 14px 10px";
+    av.textContent = "Acceso de Dirección: aquí ves y puedes imprimir lo que llevan las secretarias (y corregir algo si hiciera falta). Lo que guardes queda registrado con tu correo.";
+    $("avisos").appendChild(av);
+    // "Salir" SI se muestra a todos: la sesion de esta pagina es independiente
+    // de la del sistema, asi que cerrarla aqui NO saca a nadie del sistema y
+    // sirve para entrar con otra cuenta (por ejemplo, para probar).
+    const bs = $("btn-logout");
+    if (bs) bs.style.display = "";
+    const bp = $("btn-prellenar");
+    if (bp) { bp.style.display = ""; bp.addEventListener("click", prellenar); }
+    // Subir el formato del año: solo Dirección.
+    const bf = $("btn-subir-formato");
+    if (bf) { bf.style.display = ""; bf.addEventListener("click", dialogoSubirFormato); }
+  } else {
+    const bpSec = $("btn-prellenar");
+    if (bpSec) bpSec.remove();
+    // Las secretarias SOLO tienen Guardar y Salir: no descargan ni imprimen.
+    ["btn-pdf", "btn-pdf-hoja", "btn-imprimir"].forEach((id) => { const b = $(id); if (b) b.remove(); });
+    // Tampoco cambian el ciclo escolar: el encabezado lo fija Dirección.
+    const ct = $("ciclo-txt");
+    if (ct) {
+      ct.readOnly = true;
+      ct.title = "El ciclo escolar lo define Dirección";
+      ct.style.opacity = ".75";
+    }
+    // Aviso para las secretarias: que sepan que SI pueden corregir.
+    const av = document.createElement("div");
+    av.className = "no-print";
+    av.style.cssText = "background:#eff6ff;border:1px solid #93c5fd;color:#1e3a8a;border-radius:10px;padding:8px 12px;font-size:12px;margin:0 14px 10px";
+    av.textContent = "Puedes llenar y corregir todo lo que necesites (las veces que quieras): no hay casillas bloqueadas. Cada cambio se guarda solo; también puedes usar el botón Guardar. La información se comparte con las otras secretarias del mismo ciclo.";
+    $("avisos").appendChild(av);
+  }
+  $("ciclo-txt").value = ciclo;
+  $("ciclo-txt").addEventListener("input", () => irA(pantalla));
+  $("btn-ant").addEventListener("click", () => irA(Math.max(0, pantalla - 1)));
+  $("btn-sig").addEventListener("click", () => irA(Math.min(DEFS.length - 1, pantalla + 1)));
+  $("zoom-mas").addEventListener("click", () => { zoomManual = Math.min(4, zoomManual * 1.3); ajustar(); });
+  $("zoom-menos").addEventListener("click", () => { zoomManual = Math.max(0.5, zoomManual / 1.3); ajustar(); });
+  $("zoom-ok").addEventListener("click", () => { zoomManual = 1; ajustar(); });
+  // Si Dirección ya subió el PDF de este ciclo, la Plantilla se arma con él
+  // (y sustituye a las pantallas diseñadas a mano). Si no, se usa lo de siempre.
+  try {
+    const f = await leerFormatoDelCiclo(ciclo);
+    if (f) {
+      aplicarFormato(f, true);
+      if (usuario.rol === "direccion"){
+        aviso("Este ciclo (" + ciclo + ") usa el formato importado del PDF: " + DEFS.length + " hojas de " +
+          f.meta.documentos.map((d) => d.etiqueta).join(", ") + ".", "ok");
+      }
+    }
+  } catch (e) {
+    // Si no se pudo leer el formato del ciclo (por ejemplo, porque las reglas de
+    // Firestore todavía no incluyen la colección formatos911), hay que avisarlo:
+    // callarse mostraría la plantilla diseñada a mano y alguien podría capturar
+    // en el formato equivocado.
+    if (usuario.rol === "direccion"){
+      aviso("No se pudo leer el formato importado del ciclo " + ciclo + ": " + (e && e.message ? e.message : e) +
+        ". Se muestra la plantilla diseñada. Revisa las reglas de Firestore (ver REGLAS_FIRESTORE.md).", "error");
+    } else {
+      aviso("No se pudo cargar el formato de este ciclo. Avísale a Dirección ANTES de capturar: lo que se ve abajo es la plantilla anterior, no la de este ciclo.", "error");
+    }
+  }
+  irA(0);
+  await cargar();
+}
+
+window.addEventListener("resize", ajustar);
+
+// Zoom: 1 = la hoja completa a lo ancho de la pantalla. En el celular se
+// puede acercar para leer y capturar numeros, y desplazarse con el dedo.
+let zoomManual = 1;
+function ajustar(){
+  const esc = $("escenario");
+  const w = esc.clientWidth - 28;
+  const k = Math.min(1, w / (11 * 96)) * zoomManual;
+  const hoja = $("hoja");
+  hoja.style.transform = "scale(" + k + ")";
+  hoja.style.transformOrigin = "top left";
+  const lienzo = $("lienzo");
+  if (lienzo) {
+    lienzo.style.width = (11 * 96 * k) + "px";
+    lienzo.style.height = (8.5 * 96 * k) + "px";
+  }
+  esc.style.height = (8.5 * 96 * k + 30) + "px";
+}
+
+// ══════════ Guardar / cargar ══════════
+function refDoc(){ return refDocCiclo("plantilla911", ciclo, "actual"); }
+
+// Pedido 2026-10-03: las pantallas se redibujan vacias al navegar y
+// recolectar() solo lee la pantalla abierta, asi que al guardar se perdia lo
+// capturado en las demas. "memoria" guarda TODAS las casillas; cada pantalla
+// se vuelve a llenar desde ahi al abrirse.
+let memoria = {};
+function volcarDomAMemoria(){
+  document.querySelectorAll("[data-campo]").forEach((el) => {
+    const k = el.dataset.campo;
+    if (el.classList.contains("cajas")) memoria[k] = Array.from(el.querySelectorAll("input")).map((i) => i.value.trim()).join("");
+    else if (el.type === "checkbox") memoria[k] = el.checked ? "1" : "";
+    else memoria[k] = el.value;
+  });
+}
+function aplicarADom(datos){
+  document.querySelectorAll("[data-campo]").forEach((el) => {
+    const k = el.dataset.campo;
+    const v = datos[k];
+    if (v == null) return;
+    if (el.classList.contains("cajas")) {
+      const txt = String(v);
+      el.querySelectorAll("input").forEach((inp, i) => { inp.value = txt[i] || ""; });
+    } else if (el.type === "checkbox") { el.checked = v === "1" || v === true; }
+    else {
+      // Si el dato guardado no cabe en la casilla (por ejemplo un valor del
+      // acomodo ANTERIOR del formato, cuando varios dígitos eran un solo campo),
+      // no se pinta: es un resto viejo y ensuciaría la hoja.
+      const largo = el.maxLength > 0 ? el.maxLength : 0;
+      if (largo && String(v).length > largo) return;
+      el.value = v;
+    }
+  });
+}
+function recolectar(){
+  volcarDomAMemoria();
+  memoria.__cicloTexto = $("ciclo-txt").value;
+  return Object.assign({}, memoria);
+}
+function aplicar(datos){
+  if (!datos) return;
+  Object.assign(memoria, datos);
+  aplicarADom(memoria);
+  if (datos.__cicloTexto) $("ciclo-txt").value = datos.__cicloTexto;
+}
+async function cargar(){
+  try {
+    const snap = await getDoc(refDoc());
+    if (snap.exists() && snap.data().data) {
+      cargadoEn = snap.data().actualizado || null;
+      aplicar(JSON.parse(snap.data().data));
+      irA(pantalla);
+    }
+  } catch (e) { aviso("No se pudieron leer los datos guardados: " + e.message, "error"); }
+}
+function aviso(txt, tipo){
+  const col = tipo === "error"
+    ? "background:#fef2f2;border:1px solid #fca5a5;color:#991b1b"
+    : "background:#f0fdf4;border:1px solid #86efac;color:#166534";
+  $("avisos").innerHTML = '<div style="' + col + '">' + esc(txt) + "</div>";
+}
+
+// ── Prellenado con datos del sistema (solo Direccion) ──
+function clavesValidas(){
+  const set = new Set();
+  const grab = (h) => { for (const m of String(h).matchAll(/data-campo="([^"]+)"/g)) set.add(m[1]); };
+  grab(pintarFilas(PANTALLA_1));
+  DEFS.forEach((d) => (d.bloques || []).forEach((b) => {
+    if (b.t === "tabla") grab(pintarTabla(b)); else if (b.t === "tabla2") grab(pintarTabla2(b));
+    else if (b.t === "tablaG") grab(pintarTablaG(b)); else if (b.t === "tablaS") grab(pintarTablaS(b));
+    else if (b.t === "html") grab(b.html); else if (b.t === "fila2") { grab(b.izq); grab(b.der); }
+  }));
+  return set;
+}
+
+function mostrarInformePrellenado(r, llenadas, yaTenian){
+  const prev = document.getElementById("informe-prellenado");
+  if (prev) prev.remove();
+  const ov = document.createElement("div");
+  ov.id = "informe-prellenado";
+  ov.className = "no-print";
+  ov.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;display:flex;align-items:flex-start;justify-content:center;padding:20px 12px;overflow-y:auto";
+  const li = (arr) => arr.map((t) => "<li style='margin-bottom:4px'>" + esc(t) + "</li>").join("");
+  ov.innerHTML = '<div style="background:#fff;border-radius:14px;padding:20px 22px;width:100%;max-width:720px;font-size:13px;color:#292524;box-shadow:0 20px 60px rgba(0,0,0,.35)">'
+    + '<h3 style="margin:0 0 6px;color:#0d4f4a;font-size:17px">⚙ Prellenado con datos del sistema</h3>'
+    + '<p style="margin:0 0 10px"><b>' + llenadas + ' casillas llenadas</b>' + (yaTenian ? " (" + yaTenian + " ya tenían un dato escrito y NO se tocaron)" : "") + '. Ya quedó guardado. Revisa cada pantalla y corrige lo que haga falta: todo se puede cambiar.</p>'
+    + '<div style="font-weight:700;color:#0d4f4a;margin-top:10px">Qué se llenó</div><ul style="margin:6px 0 0 18px;padding:0">'
+    + li(r.informe.map((i) => (i.hoja ? "Hoja " : "Pantalla ") + i.pantalla + ": " + i.texto)) + '</ul>'
+    + '<div style="font-weight:700;color:#92400e;margin-top:12px">Revisa con cuidado</div><ul style="margin:6px 0 0 18px;padding:0">' + li(r.avisos) + '</ul>'
+    + '<div style="font-weight:700;color:#57534e;margin-top:12px">Quedó en blanco (el sistema no tiene ese dato)</div>'
+    + '<p style="margin:6px 0 0">Hablantes de lengua indígena, afrodescendientes, discapacidad, trastornos, aptitudes sobresalientes y otras condiciones; alumnos que vienen de otra escuela y de primaria (general/indígena); USAER; reprobados, regularizados e irregulares; docentes por grado; tutores y subdirector; lugar de residencia; aulas; idiomas, libros y oficialización; y los datos de identificación que no están en Configuración General.</p>'
+    + '<div style="margin-top:14px;text-align:right"><button id="informe-cerrar" style="padding:9px 18px;border:none;border-radius:8px;background:#0d4f4a;color:#fff;font-weight:600;cursor:pointer">Entendido</button></div>'
+    + '</div>';
+  document.body.appendChild(ov);
+  document.getElementById("informe-cerrar").onclick = () => ov.remove();
+}
+
+async function prellenar(){
+  if (!usuario || usuario.rol !== "direccion") return;
+  const b = $("btn-prellenar");
+  if (!b || b.disabled) return;
+  if (!confirm("Se llenarán con datos del sistema SOLO las casillas que estén vacías: no se borra ni cambia nada de lo que ya esté escrito.\n\nDespués podrás revisar y corregir todo.\n\n¿Continuar?")) return;
+  const texto0 = b.textContent;
+  b.disabled = true; b.textContent = "Leyendo datos del sistema...";
+  try {
+    const M = await import("./src/modules/plantilla-911/prellenado911.js");
+    // Leer los alumnos / personal / configuración puede tardar; con límite de
+    // tiempo, si Firestore no contesta se dice en vez de quedarse mudo.
+    const datos = await conTiempo(M.leerDatosParaPrellenado(ciclo), 150000,
+      "Firestore no respondió al leer los datos del sistema (alumnos, personal, configuración)");
+    let r;
+    if (formatoImportado) {
+      // Con el formato importado del PDF, las casillas tienen nombres por
+      // posición ("d1_h1c7"), no los nombres de la plantilla diseñada. Así que
+      // se calculan TODOS los valores (sin filtrar) y se traducen a las hojas
+      // del PDF por los RÓTULOS del propio formato (ver prellenado-formato.js).
+      const T = await import("./src/modules/plantilla-911/prellenado-formato.js");
+      const base = M.calcularPrellenado911(datos, null);
+      const t = T.prellenarFormatoImportado(base.valores, DEFS);
+      r = {
+        valores: t.valores,
+        informe: t.informe.map((i) => ({ pantalla: i.hoja, hoja: true, texto: i.texto })),
+        avisos: base.avisos.concat(t.avisos)
+      };
+      if (!t.casillas) r.avisos.unshift("El formato importado de este ciclo no tiene los rótulos esperados, así que no se pudo colocar ningún dato. Revisa que sea el PDF oficial del 911.5.");
+    } else {
+      r = M.calcularPrellenado911(datos, clavesValidas());
+    }
+    const actuales = recolectar();
+    const nuevos = {};
+    let llenadas = 0, yaTenian = 0;
+    Object.keys(r.valores).forEach((k) => {
+      if (String(actuales[k] == null ? "" : actuales[k]).trim() === "") { nuevos[k] = r.valores[k]; llenadas++; }
+      else yaTenian++;
+    });
+    aplicar(nuevos);
+    irA(pantalla);
+    await guardar(false);
+    mostrarInformePrellenado(r, llenadas, yaTenian);
+  } catch (e) {
+    aviso("No se pudo prellenar: " + (e && e.message ? e.message : e), "error");
+  }
+  b.disabled = false; b.textContent = texto0;
+}
+
+async function guardar(silencioso) {
+  const b = $("btn-guardar");
+  if (b.disabled && !silencioso) return;
+  if (!silencioso) { b.disabled = true; b.textContent = "Guardando..."; }
+  try {
+    const snap = await getDoc(refDoc());
+    const remoto = snap.exists() ? (snap.data().actualizado || null) : null;
+    if (remoto && cargadoEn && remoto !== cargadoEn) {
+      if (silencioso) {
+        // El guardado automatico NUNCA pisa lo de otra persona: avisa y se
+        // detiene, para que decidas con el boton Guardar.
+        aviso("⚠ Alguien más guardó cambios mientras trabajabas. El guardado automático se detuvo para no borrar lo suyo: revisa la pantalla y, si quieres reemplazar, dale a «Guardar».", "error");
+        b.disabled = false; b.textContent = "Guardar"; return;
+      }
+      if (!confirm("Otra persona guardó cambios después de que abriste esta pantalla.\n\nSi guardas ahora, se reemplaza lo suyo por lo tuyo.\n\n¿Guardar de todos modos?")) {
+        b.disabled = false; b.textContent = "Guardar"; return;
+      }
+    }
+    const sello = new Date().toISOString();
+    await setDoc(refDoc(), { data: JSON.stringify(recolectar()), actualizado: sello, actualizadoPor: usuario.email });
+    cargadoEn = sello;
+    aviso((silencioso ? "Guardado automático. " : "Guardado. ") + "Última actualización: " + usuario.nombre + " — " + new Date().toLocaleString("es-MX"), "ok");
+  } catch (e) {
+    aviso("No se pudo guardar: " + e.message, "error");
+  }
+  b.disabled = false; b.textContent = "Guardar";
+}
+
+$("btn-guardar").addEventListener("click", () => guardar(false));
+
+// Guardado automatico: 2.5 s despues de la ultima captura. Asi no se pierde
+// nada aunque se cierre la pagina sin darle a Guardar.
+let temporizadorGuardado = null;
+document.addEventListener("input", (e) => {
+  if (!e.target || !e.target.closest || !e.target.closest("[data-campo]")) return;
+  if (temporizadorGuardado) clearTimeout(temporizadorGuardado);
+  temporizadorGuardado = setTimeout(() => { guardar(true); }, 2500);
+});
+
+// ── Descarga del PDF: las 15 hojas, carta horizontal, sin dialogo ──
+async function cargarLibreriasPDF() {
+  if (window.html2canvas && window.jspdf) return;
+  const cargar = (url) => new Promise((res, rej) => {
+    const s = document.createElement("script");
+    s.src = url; s.onload = res; s.onerror = () => rej(new Error("No se pudo cargar " + url));
+    document.head.appendChild(s);
+  });
+  if (!window.html2canvas) await cargar("assets/vendor/html2canvas.min.js");
+  if (!window.jspdf) await cargar("assets/vendor/jspdf.umd.min.js");
+}
+
+async function descargarPDF() {
+  const b = $("btn-pdf");
+  const textoOriginal = b.textContent;
+  b.disabled = true;
+  try {
+    b.textContent = "Cargando…";
+    await cargarLibreriasPDF();
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: "landscape", unit: "in", format: [11, 8.5] });
+    const hoja = $("hoja");
+    const escenario = $("escenario");
+    const pantallaPrevia = pantalla;
+    const transformPrevio = hoja.style.transform;
+    const altoPrevio = escenario.style.height;
+    hoja.style.transform = "none";
+    escenario.style.height = "auto";
+    for (let i = 0; i < DEFS.length; i++) {
+      irA(i);
+      hoja.style.transform = "none";
+      b.textContent = "Generando " + (i + 1) + " de " + DEFS.length + "…";
+      await new Promise((r) => setTimeout(r, 140));
+      const canvas = await window.html2canvas(hoja, opcionesCaptura(2));
+      const img = canvas.toDataURL("image/jpeg", 0.92);
+      if (i > 0) pdf.addPage([11, 8.5], "landscape");
+      pdf.addImage(img, "JPEG", 0, 0, 11, 8.5);
+    }
+    irA(pantallaPrevia);
+    hoja.style.transform = transformPrevio;
+    escenario.style.height = altoPrevio;
+    const nombre = "Plantilla-911.5-" + ($("ciclo-txt").value || ciclo || "ciclo").replace(/[^\w.-]+/g, "_") + ".pdf";
+    pdf.save(nombre);
+    aviso("✅ Se descargó " + nombre + " con " + DEFS.length + " hoja" +
+      (DEFS.length === 1 ? "" : "s") + " (carta horizontal).", "ok");
+  } catch (e) {
+    aviso("No se pudo generar el PDF (" + (e && e.message ? e.message : e) + "). Usa «Imprimir» y elige «Guardar como PDF».", "error");
+  }
+  b.disabled = false; b.textContent = textoOriginal;
+}
+
+$("btn-pdf").addEventListener("click", descargarPDF);
+// ── Imprimir / descargar SOLO la hoja que se está viendo ──
+// Se usa la MISMA captura que el PDF (html2canvas): sale idéntica a como se ve en pantalla, sin zoom.
+// Antes el botón llamaba directo a window.print() y en Safari no abría nada.
+// Opciones de html2canvas. Las CASILLAS (input/textarea/select) se cambian, SÓLO en la copia que se
+// fotografía, por cuadros de texto con el mismo tamaño, borde y alineación: así el dato escrito sale
+// en la imagen/PDF en cualquier navegador (en algunos —Safari— html2canvas dibuja la casilla pero
+// NO el texto que lleva dentro, y la hoja salía vacía).
+function opcionesCaptura(escala){
+  return {
+    scale: escala, backgroundColor: "#ffffff", logging: false, useCORS: true,
+    onclone: (docClon) => {
+      const win = docClon.defaultView;
+      docClon.querySelectorAll("#hoja input, #hoja textarea, #hoja select").forEach((el) => {
+        const cs = win.getComputedStyle(el);
+        const esMarca = el.type === "checkbox" || el.type === "radio";
+        const texto = el.tagName === "SELECT"
+          ? (el.options[el.selectedIndex] ? el.options[el.selectedIndex].text : "")
+          : (esMarca ? (el.checked ? "✔" : "") : el.value);
+        const d = docClon.createElement("div");
+        d.textContent = texto;
+        const absoluto = cs.position === "absolute";
+        const alin = cs.textAlign === "center" ? "center" : (cs.textAlign === "right" || cs.textAlign === "end") ? "flex-end" : "flex-start";
+        const multi = el.tagName === "TEXTAREA";
+        d.style.cssText =
+          "box-sizing:border-box;overflow:hidden;" + (multi ? "white-space:pre-wrap;align-items:flex-start;" : "white-space:pre;align-items:center;") +
+          "justify-content:" + alin + ";" +
+          (absoluto ? "display:flex;position:absolute;left:" + cs.left + ";top:" + cs.top + ";"
+                    : "display:inline-flex;vertical-align:" + cs.verticalAlign + ";margin:" + cs.margin + ";") +
+          "width:" + cs.width + ";height:" + cs.height + ";" +
+          "font-family:" + cs.fontFamily + ";font-size:" + cs.fontSize + ";font-weight:" + cs.fontWeight + ";line-height:1.1;" +
+          "color:" + cs.color + ";background:transparent;padding:" + cs.padding + ";" +
+          "border:" + cs.borderTopWidth + " " + cs.borderTopStyle + " " + cs.borderTopColor + ";";
+        el.parentNode.replaceChild(d, el);
+      });
+    }
+  };
+}
+
+async function capturarHojaActual(escala){
+  await cargarLibreriasPDF();
+  const hoja = $("hoja"), escenario = $("escenario");
+  const transformPrevio = hoja.style.transform, altoPrevio = escenario.style.height;
+  hoja.style.transform = "none"; escenario.style.height = "auto";
+  await new Promise((r) => setTimeout(r, 140));
+  try {
+    return await window.html2canvas(hoja, opcionesCaptura(escala));
+  } finally {
+    hoja.style.transform = transformPrevio; escenario.style.height = altoPrevio;
+  }
+}
+
+async function imprimirHojaActual(){
+  const boton = $("btn-imprimir");
+  const textoOriginal = boton.textContent;
+  boton.disabled = true; boton.textContent = "Preparando…";
+  try {
+    const canvas = await capturarHojaActual(3);
+    const img = canvas.toDataURL("image/jpeg", 0.95);
+    const viejo = document.getElementById("marco-impresion"); if (viejo) viejo.remove();
+    const marco = document.createElement("iframe");
+    marco.id = "marco-impresion";
+    marco.setAttribute("aria-hidden", "true");
+    marco.style.cssText = "position:fixed;right:0;bottom:0;width:11in;height:8.5in;border:0;opacity:0;pointer-events:none";
+    document.body.appendChild(marco);
+    marco.onload = async () => {
+      try {
+        const im = marco.contentDocument.querySelector("img");
+        if (im && !im.complete) await new Promise((r) => { im.onload = im.onerror = r; });
+        await new Promise((r) => setTimeout(r, 200));
+        marco.contentWindow.focus();
+        marco.contentWindow.print();
+      } catch (e) { window.print(); }
+      boton.disabled = false; boton.textContent = textoOriginal;
+      setTimeout(() => marco.remove(), 120000);
+    };
+    marco.srcdoc = "<!doctype html><html><head><meta charset='utf-8'><title>Plantilla 911.5 — hoja " + (pantalla + 1) + "</title>" +
+      "<style>@page{size:11in 8.5in;margin:0}html,body{margin:0;padding:0;background:#fff}img{display:block;width:11in;height:8.5in}</style></head><body><img src='" + img + "'></body></html>";
+  } catch (e) {
+    boton.disabled = false; boton.textContent = textoOriginal;
+    aviso("No se pudo preparar la impresión (" + (e && e.message ? e.message : e) + "). Usa «⬇ Esta hoja» y la imprimes desde el PDF.", "error");
+  }
+}
+
+async function descargarHojaActual(){
+  const boton = $("btn-pdf-hoja");
+  const textoOriginal = boton.textContent;
+  boton.disabled = true; boton.textContent = "Generando…";
+  try {
+    const canvas = await capturarHojaActual(2);
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: "landscape", unit: "in", format: [11, 8.5] });
+    pdf.addImage(canvas.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, 11, 8.5);
+    const nombre = "Plantilla-911.5-hoja-" + (pantalla + 1) + "-" + ($("ciclo-txt").value || ciclo || "ciclo").replace(/[^\w.-]+/g, "_") + ".pdf";
+    pdf.save(nombre);
+    aviso("✅ Se descargó " + nombre + " (solo esta hoja).", "ok");
+  } catch (e) {
+    aviso("No se pudo generar el PDF de la hoja (" + (e && e.message ? e.message : e) + ").", "error");
+  }
+  boton.disabled = false; boton.textContent = textoOriginal;
+}
+$("btn-pdf-hoja").addEventListener("click", descargarHojaActual);
+$("btn-imprimir").addEventListener("click", imprimirHojaActual);
+</script>
+</body>
+</html>
