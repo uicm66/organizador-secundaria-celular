@@ -11,6 +11,8 @@
 <link href="assets/fonts/plus-jakarta-sans/plus-jakarta-sans.css" rel="stylesheet"><title>Organizador Secundaria</title>
 <link rel="stylesheet" href="assets/icons/tabler-icons/tabler-icons.min.css">
 <style>
+/* Safari: oculta el botón de «Autorrelleno de Contactos» (menú de contactos de la Mac) en los campos de la app */
+input::-webkit-contacts-auto-fill-button { visibility: hidden; display: none !important; pointer-events: none; position: absolute; right: 0; }
 *{box-sizing:border-box}
 body{margin:0;background:#faf8f4;font-family:sans-serif}
 #layout{display:grid;grid-template-columns:200px 1fr;grid-template-rows:60px 1fr;min-height:100vh;grid-template-areas:"sidebar header" "sidebar main"}
