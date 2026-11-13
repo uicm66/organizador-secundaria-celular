@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solicitud de Permiso Económico</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 40px; max-width: 700px; margin: 0 auto; font-size: 14px; color: #111; }
+  .fecha { text-align: right; margin-bottom: 32px; }
+  .asunto { margin-bottom: 24px; }
+  .destinatario { margin-bottom: 24px; line-height: 1.8; }
+  .cuerpo { margin-bottom: 40px; line-height: 2; text-align: justify; }
+  .firmas { margin-top: 60px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .firma-izq { text-align: center; width: 45%; }
+  .firma-der { text-align: center; width: 45%; }
+  .linea { border-top: 1px solid #111; margin-bottom: 6px; }
+  .btn-imprimir { display: block; margin: 0 auto 32px; padding: 10px 28px; background: #0d4f4a; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .btn-imprimir:hover { background: #0a3d39; }
+  @media print { .btn-imprimir { display: none; } .btn-regresar { display: none; } #proteccion { display: none; } body { padding: 20px; } @page { margin: 1.5cm; } }
+  .blank { display: inline-block; border-bottom: 1px solid #111; min-width: 80px; }
+  .blank-sm { display: inline-block; border-bottom: 1px solid #111; min-width: 40px; }
+  .blank-lg { display: inline-block; border-bottom: 1px solid #111; min-width: 160px; }
+</style>
+<script type="module">
+// VERSION LOCAL -- copia de trabajo ("Organizador Secundaria Local").
+// Ya no se importa el SDK de Firebase: viene del motor local (IndexedDB,
+// sin nube) en src/local-db/motorLocal.js. La contraseña de respaldo (si
+// config/app_password no existe todavia en esta base de datos local,
+// arranque tipo "escuela nueva") se cambia desde el módulo Configuración
+// dentro de la app.
+import{initializeApp}from"./src/local-db/motorLocal.js";
+import{getFirestore,doc,getDoc}from"./src/local-db/motorLocal.js";
+const db=getFirestore(initializeApp());
+var PASSWORD_RESPALDO=null;   // sin contraseña por defecto: programa nuevo = sin contraseña hasta que se defina en Configuración
+document.body.style.display="none";
+var overlay=document.createElement("div");
+overlay.id="pw-overlay";
+overlay.style.cssText="position:fixed;inset:0;background:#f5f1e8;display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Arial,sans-serif";
+overlay.innerHTML="<div style='background:white;padding:40px 32px;border-radius:16px;width:100%;max-width:360px;box-shadow:0 4px 24px rgba(0,0,0,0.1);text-align:center'><img src=Escudo federal.png style='width:70px;margin-bottom:16px'><h2 style='margin:0 0 6px;font-size:18px;color:#0d4f4a'>Solicitud de Permiso</h2><input id=pw-inp type=password placeholder=Contrasena style='width:100%;padding:10px 12px;border:1px solid #e7e1d4;border-radius:8px;font-size:14px;box-sizing:border-box;margin-bottom:12px'><button id=pw-btn style='width:100%;padding:11px;background:#0d4f4a;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer'>Entrar</button><p id=pw-err style='color:#9f1239;font-size:12px;margin:10px 0 0;display:none'>Contraseña incorrecta</p></div>";
+document.documentElement.appendChild(overlay);
+// Programa nuevo: si todavía no hay contraseña del sistema, la página abre directo (se define en Configuración).
+(async function(){
+  try{
+    var s0=await getDoc(doc(db,"config","app_password"));
+    if(!s0.exists()){overlay.remove();document.body.style.display="";}
+  }catch(e){overlay.remove();document.body.style.display="";}
+})();
+async function verificar(){
+  var inp=document.getElementById("pw-inp").value;
+  if(!inp)return;
+  try{
+    var snap=await getDoc(doc(db,"config","app_password"));
+    var correcta=snap.exists()?snap.data().password:null;
+    if(correcta===null||inp===correcta){
+      overlay.remove();
+      document.body.style.display="";
+    } else {
+      document.getElementById("pw-err").style.display="block";
+      document.getElementById("pw-inp").value="";
+    }
+  }catch(e){
+    overlay.remove();document.body.style.display="";
+  }
+}
+document.getElementById("pw-btn").addEventListener("click",verificar);
+document.addEventListener("keydown",function(e){if(e.key==="Enter")verificar();});
+</script>
+</head>
+<body>
+
+<button class="btn-regresar" onclick="window.close()" style="display:inline-block;margin:0 auto 12px;padding:8px 20px;background:#f5f1e8;color:#0d4f4a;border:1px solid #e7e1d4;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">← Regresar</button>
+<button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir / PDF</button>
+
+<div class="fecha">
+  [Municipio, Estado] a <span class="blank-sm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> de <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> de <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.
+</div>
+
+<div class="asunto">
+  <strong>Asunto:</strong> Se solicita Licencia Económica.
+</div>
+
+<div class="destinatario">
+  <strong>[NOMBRE DEL DIRECTOR]</strong><br>
+  <strong>DIRECTOR DE LA ESCUELA SECUNDARIA</strong><br>
+  <strong>"[NOMBRE DE TU ESCUELA]"</strong><br>
+  <strong>PRESENTE.</strong>
+</div>
+
+<div class="cuerpo">
+  Por este medio, tengo a bien dirigirme a usted de manera respetuosa, para solicitar Licencia
+  <strong>Económica Número: <span class="blank-sm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></strong>
+  que comprendería los días <span class="blank-sm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>,
+  <span class="blank-sm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> Y
+  <span class="blank-sm">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> de
+  <span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+  <strong>del</strong> año en curso, para atender <strong>asuntos de carácter personal.</strong>
+</div>
+
+<p>Sin otro particular por el momento y agradeciendo de antemano la atención prestada a la presente, le anticipo mi respeto y sincero agradecimiento.</p>
+
+<p style="margin-top:24px;">Atentamente.</p>
+
+<div class="firmas">
+  <div class="firma-izq">
+    <div class="linea"></div>
+    <div>Firma del solicitante</div>
+  </div>
+  <div class="firma-der">
+    <div style="margin-bottom:6px;">Autorizó</div>
+    <div class="linea"></div>
+    <div><strong>[NOMBRE DEL DIRECTOR]</strong></div>
+    <div>DIRECTOR DE LA ESCUELA</div>
+  </div>
+</div>
+
+<a href="./" id="fcp-volver-app" style="position:fixed;top:max(10px,env(safe-area-inset-top));right:10px;z-index:2147483647;padding:9px 14px;background:#0d4f4a;color:#fff;border-radius:20px;font:600 13px -apple-system,system-ui,sans-serif;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)">← Volver a la app</a></body>
+</html>
