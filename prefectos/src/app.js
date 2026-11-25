@@ -125,6 +125,9 @@ function _pfMandar() {
     if (d.tipo === "retardo" || d.tipo === "retardo_paes") {
       return { t: d.tipo, m: d.maestroNombre, hp: d.horaProgramada, hl: d.horaLlegada, min: d.minutosRetardo, g: d.grupo };
     }
+    if (d.tipo === "observacion") {
+      return { t: "observacion", m: d.maestroNombre, g: d.grupo, campos: { tipo: "observacion", modulo: d.modulo, horaProgramada: d.horaProgramada, grupo: d.grupo, observacion: d.observacion } };
+    }
     return { t: d.tipo || "inasistencia", m: d.maestroNombre, h: d.horasNoTrabajadas, g: d.grupos };
   });
   var codigo = _pfCodigo(r, prefecto, fecha);
@@ -376,10 +379,44 @@ function actualizarResumenRetardo() {
   }).join('');
 }
 
+// --- Observaciones: el maestro vino pero no cumplió su tiempo completo ---
+const OBS_RAPIDAS = ['Salió antes de tiempo', 'Estaba en ensayo', 'No estaba en el salón', 'Dejó solo al grupo'];
+
+function escHtml(t) {
+  return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function renderCamposObservacion() {
+  const selMod = document.getElementById('obs-modulo');
+  const selGrp = document.getElementById('obs-grupo');
+  const chips = document.getElementById('obs-chips');
+  if (!selMod || !selGrp || !chips) return;
+  let hm = '<option value="">Módulo…</option>';
+  HORAS_PROGRAMADAS.forEach((hp, i) => { hm += '<option value="' + (i + 1) + '">' + (i + 1) + 'ª (' + hp + ')</option>'; });
+  selMod.innerHTML = hm;
+  let hg = '<option value="">Grupo…</option>';
+  gruposDelGrado().forEach(g => { hg += '<option value="' + g + '">' + g + '</option>'; });
+  selGrp.innerHTML = hg;
+  document.getElementById('obs-texto').value = '';
+  if (!chips.dataset.listo) {
+    chips.innerHTML = OBS_RAPIDAS.map(t => '<button type="button" class="obs-chip">' + t + '</button>').join('');
+    chips.querySelectorAll('.obs-chip').forEach(b => {
+      b.addEventListener('click', () => {
+        const ta = document.getElementById('obs-texto');
+        const actual = ta.value.trim();
+        ta.value = actual ? actual + '. ' + b.textContent : b.textContent;
+        ta.focus();
+      });
+    });
+    chips.dataset.listo = '1';
+  }
+}
+
 async function iniciarApp() {
   document.getElementById('input-fecha').value = hoy();
   renderHorasGrupoLista();
   renderRetardoLista();
+  renderCamposObservacion();
   await cargarMaestros();
 
   // Toggle tipo
@@ -390,6 +427,10 @@ async function iniciarApp() {
       tipoRegistro = btn.dataset.tipo;
       document.getElementById('campos-inasistencia').style.display = tipoRegistro === 'inasistencia' ? '' : 'none';
       document.getElementById('campos-retardo').style.display = tipoRegistro === 'retardo' ? '' : 'none';
+      const camposObs = document.getElementById('campos-observacion');
+      if (camposObs) camposObs.style.display = tipoRegistro === 'observacion' ? '' : 'none';
+      const secPaes = document.getElementById('seccion-paes');
+      if (secPaes) secPaes.style.display = tipoRegistro === 'observacion' ? 'none' : '';
       const bloqInaPaes = document.getElementById('paes-bloque-inasistencia');
       const bloqRetPaes = document.getElementById('paes-bloque-retardo');
       if (bloqInaPaes) bloqInaPaes.style.display = tipoRegistro === 'inasistencia' ? '' : 'none';
@@ -518,6 +559,7 @@ function limpiarFormulario() {
   retardosEnCurso = {};
   renderRetardoLista();
   actualizarResumenRetardo();
+  renderCamposObservacion();
   document.getElementById('input-fecha').value = hoy();
 }
 
@@ -562,6 +604,37 @@ async function enviarRegistro() {
       }
       limpiarFormulario();
       successEl.textContent = gruposConHoras.length > 1 ? gruposConHoras.length + ' inasistencias registradas.' : 'Inasistencia registrada.';
+      setTimeout(() => { successEl.textContent = ''; }, 3000);
+      cargarRegistrosHoy();
+    } catch (e) {
+      alert('Error al enviar: ' + e.message);
+    }
+  } else if (tipoRegistro === 'observacion') {
+    const modulo = parseInt(document.getElementById('obs-modulo').value, 10);
+    const grupo = document.getElementById('obs-grupo').value;
+    const texto = document.getElementById('obs-texto').value.trim();
+    if (!modulo) { alert('Elige el módulo.'); return; }
+    if (!grupo) { alert('Elige el grupo.'); return; }
+    if (!texto) { alert('Escribe qué pasó.'); return; }
+
+    btnEnviar.disabled = true;
+    btnEnviar.textContent = 'Enviando...';
+    try {
+      await addDoc(collection(db, 'inasistencias_prefectos'), {
+        tipo: 'observacion',
+        maestroNombre: maestro,
+        fecha: fecha,
+        modulo: modulo,
+        horaProgramada: HORAS_PROGRAMADAS[modulo - 1],
+        grupo: grupo,
+        observacion: texto.slice(0, 300),
+        prefectoId: prefectoActual.uid,
+        prefectoNombre: prefectoActual.nombre,
+        timestamp: serverTimestamp(),
+        estatus: 'pendiente'
+      });
+      limpiarFormulario();
+      successEl.textContent = 'Observación registrada.';
       setTimeout(() => { successEl.textContent = ''; }, 3000);
       cargarRegistrosHoy();
     } catch (e) {
@@ -628,8 +701,10 @@ async function cargarRegistrosHoy() {
     // Agrupar inasistencias por maestro; retardos se muestran individualmente
     const mapaInasist = {};
     const retardos = [];
+    const observaciones = [];
     todos.forEach(r => {
       if (r.tipo === 'retardo') { retardos.push(r); return; }
+      if (r.tipo === 'observacion') { observaciones.push(r); return; }
       const k = r.maestroNombre;
       if (!mapaInasist[k]) mapaInasist[k] = { nombre: k, horas: 0, grupos: [], ids: [] };
       mapaInasist[k].horas += (r.horasNoTrabajadas || 0);
@@ -658,6 +733,17 @@ async function cargarRegistrosHoy() {
         + '<span class="badge-retardo">RETARDO</span>'
         + '</div>'
         + '<div class="detalle">' + r.minutosRetardo + ' min (entrada: ' + r.horaProgramada + ', llegó: ' + r.horaLlegada + ') - Grupo: ' + r.grupo + '</div>'
+        + '</div>';
+    });
+
+    observaciones.forEach(r => {
+      html += '<div class="registro-item registro-observacion">'
+        + '<div class="registro-header">'
+        + '<div class="maestro">' + escHtml(r.maestroNombre) + '</div>'
+        + '<span class="badge-observacion">OBSERVACIÓN</span>'
+        + '</div>'
+        + '<div class="detalle">' + (r.modulo ? r.modulo + 'ª hora' : '') + ' - Grupo: ' + escHtml(r.grupo) + '</div>'
+        + '<div class="detalle" style="font-style:italic;">' + escHtml(r.observacion) + '</div>'
         + '</div>';
     });
 

@@ -526,6 +526,23 @@ body {
   transition:opacity 0.15s;
 }
 .rt-select:disabled { opacity:0.35; }
+/* Observaciones */
+.obs-fila { display:flex; gap:8px; }
+.obs-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+.obs-chip {
+  padding:7px 11px; border-radius:999px; border:1.5px solid #c5cae9; background:#f5f6fb;
+  color:#3949ab; font-size:0.8rem; font-weight:600; cursor:pointer;
+}
+.obs-chip:active { background:#1a237e; color:white; }
+.obs-texto {
+  width:100%; box-sizing:border-box; padding:10px; border-radius:8px; border:1.5px solid #c5cae9;
+  font-size:16px; font-family:inherit; resize:vertical;
+}
+.registro-item.registro-observacion { border-left-color:#7c3aed; background:#f7f3ff; }
+.badge-observacion {
+  font-size:0.65rem; font-weight:700; background:#ede9fe; color:#6d28d9;
+  padding:3px 8px; border-radius:20px; white-space:nowrap;
+}
 /* Retardo grave >=15 min */
 .retardo-grave { border-left:4px solid #dc2626 !important; background:#fef2f2; }
 .retardo-grave .badge-retardo { background:#dc2626; color:white; }

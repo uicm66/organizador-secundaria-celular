@@ -62,6 +62,7 @@
         <div class="tipo-toggle">
           <button class="tipo-btn selected" data-tipo="inasistencia">Inasistencia</button>
           <button class="tipo-btn" data-tipo="retardo">Retardo</button>
+          <button class="tipo-btn" data-tipo="observacion" id="btn-tipo-observacion">Observación</button>
         </div>
 
         <div class="form-group">
@@ -104,6 +105,23 @@
           <div class="form-group" id="resumen-retardo" style="display:none;">
             <label>Se van a enviar <span id="resumen-retardo-count">0</span> registro(s)</label>
             <div id="resumen-retardo-lista"></div>
+          </div>
+        </div>
+
+        <!-- CAMPOS OBSERVACION -->
+        <div id="campos-observacion" style="display:none;">
+          <div class="form-group">
+            <label>¿En qué módulo y con qué grupo?</label>
+            <div class="obs-fila">
+              <select id="obs-modulo" class="rt-select"></select>
+              <select id="obs-grupo" class="rt-select"></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>¿Qué pasó?</label>
+            <div class="obs-chips" id="obs-chips"></div>
+            <textarea id="obs-texto" class="obs-texto" rows="3" maxlength="300" placeholder="Escribe brevemente qué pasó..."></textarea>
+            <p class="hint-texto" style="font-size:12px;color:#185fa5;background:#e6f1fb;border-radius:6px;padding:7px 10px;margin-top:8px;line-height:1.5;">Úsalo cuando el maestro sí vino pero no cumplió su tiempo completo (salió antes, estaba en ensayo, dejó solo al grupo...). Puedes tocar una opción rápida o escribir tu nota.</p>
           </div>
         </div>
 
